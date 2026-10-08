@@ -1,382 +1,124 @@
-import { createContext, useContext, useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { ArrowLeft, ArrowRight, ArrowUpRight, Check, CircleHelp, Leaf, Minus, PackageOpen, Plus, Search, ShieldCheck, ShoppingBag, Sprout, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Check, Leaf, Minus, PackageOpen, Plus, Search, ShoppingBag, Trash2, X } from 'lucide-react';
 import { Link, Route, Switch, useLocation, Router as WouterRouter, useRoute } from 'wouter';
 import './index.css';
 
-type Lang = 'en' | 'ur';
-type Product = { slug: string; name: string; ur: string; localName: string; localUr: string; category: string; description: string; descriptionUr: string; art: string };
+type Product = { slug: string; name: string; ur: string; price: number; grams: number; photo: string };
 type CartLine = { slug: string; quantity: number };
-
-const STORE_CONFIG = {
-  // Replace this placeholder when the store's WhatsApp number is confirmed.
-  whatsappNumber: '03.........',
-  shopName: 'Tib-E-Nabwi',
-};
-
-const products: Product[] = [
-  { slug: 'garden-seed-blend', name: 'Garden Seed Blend', ur: 'باغ کے بیجوں کا آمیزہ', localName: 'Mixed botanical seeds', localUr: 'مخلوط نباتاتی بیج', category: 'Seeds', description: 'An illustrative sample listing for a traditional pantry staple. Product details are not yet confirmed.', descriptionUr: 'روایتی گھریلو استعمال کی ایک نمائشی مثال۔ مصنوعات کی تفصیلات ابھی تصدیق شدہ نہیں ہیں۔', art: 'art-seed' },
-  { slug: 'green-leaf-infusion', name: 'Green Leaf Infusion', ur: 'سبز پتوں کی چائے', localName: 'Herbal infusion', localUr: 'جڑی بوٹیوں کا مشروب', category: 'Herbal blends', description: 'A placeholder for a loose herbal blend. Ingredients and preparation details will be added by the shop owner.', descriptionUr: 'کھلی جڑی بوٹیوں کے آمیزے کی نمائشی مثال۔ اجزاء اور استعمال کی تفصیلات دکاندار شامل کریں گے۔', art: 'art-tea' },
-  { slug: 'golden-kernel-oil', name: 'Golden Kernel Oil', ur: 'سنہری بیجوں کا تیل', localName: 'Botanical oil', localUr: 'نباتاتی تیل', category: 'Oils', description: 'An illustrative bottle concept only. No real formulation, size, or ingredient list has been provided.', descriptionUr: 'صرف بوتل کی نمائشی مثال۔ اصل ترکیب، مقدار یا اجزاء کی فہرست فراہم نہیں کی گئی۔', art: 'art-oil' },
-  { slug: 'wild-garden-leaves', name: 'Wild Garden Leaves', ur: 'قدرتی باغی پتے', localName: 'Dried leaves', localUr: 'خشک پتے', category: 'Botanicals', description: 'A sample botanical listing with space for the real product story once available.', descriptionUr: 'نباتاتی مصنوعات کی نمائشی فہرست، اصل معلومات دستیاب ہونے پر شامل کی جائیں گی۔', art: 'art-leaf' },
+const product: Product = { slug: 'al-mizan', name: 'Al-Mizan Herbal Powder', ur: 'المیزان ہربل پاؤڈر', price: 2500, grams: 200, photo: 'al-mizan-original.jpeg' };
+const ingredients = [
+  ['Senna leaf', 'سنا کے پتے'], ['Ajwain', 'اجوائن'], ['Kalonji (black seed)', 'کلونجی'], ['Green tea', 'سبز چائے'],
+  ['Mint', 'پودینہ'], ['Saunf (fennel)', 'سونف'], ['Ginger', 'ادرک'],
 ];
-
+const number = '+92 329 7976370';
+const waNumber = '923297976370';
 const queryClient = new QueryClient();
-const StoreContext = createContext<{ lang: Lang; setLang: (lang: Lang) => void; cart: CartLine[]; add: (slug: string) => void; change: (slug: string, delta: number) => void; remove: (slug: string) => void; count: number } | null>(null);
-const useStore = () => {
-  const value = useContext(StoreContext);
-  if (!value) throw new Error('Store context is missing');
-  return value;
-};
-const copy = (lang: Lang, en: string, ur: string) => lang === 'en' ? en : ur;
-const productCopy = (product: Product, lang: Lang) => lang === 'en' ? product.name : product.ur;
-const localCopy = (product: Product, lang: Lang) => lang === 'en' ? product.localName : product.localUr;
-const productDescription = (product: Product, lang: Lang) => lang === 'en' ? product.description : product.descriptionUr;
-
+type Store = { cart: CartLine[]; add: (slug: string) => void; change: (slug: string, delta: number) => void; remove: (slug: string) => void; count: number; openCart: () => void; preview: (src: string) => void };
+const StoreContext = createContext<Store | null>(null);
+const useStore = () => { const value = useContext(StoreContext); if (!value) throw new Error('Store context is missing'); return value; };
+const asset = (name: string) => `${import.meta.env.BASE_URL}images/${name}`;
+const money = (amount: number) => `PKR ${amount.toLocaleString('en-PK')}`;
+function Bi({ en, ur, className = '' }: { en: ReactNode; ur: ReactNode; className?: string }) {
+  return <span className={`bilingual ${className}`}><span lang="en" dir="ltr">{en}</span><span lang="ur" dir="rtl" className="urdu">{ur}</span></span>;
+}
+function Mark() {
+  return <svg className="mark-svg" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 39V21m0 8C14 29 10 22 10 14c9 0 15 5 14 15Zm0-8c0-9 6-14 15-14 0 8-5 15-15 15ZM14 39h20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 40h30" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
+}
+function Brand({ footer = false }: { footer?: boolean }) {
+  return <Link href="/" className={`brand ${footer ? 'brand-footer' : ''}`} aria-label="Tib-E-Nabwi, طبِ نبوی — home" data-testid="link-brand"><span className="brand-emblem"><Mark /></span><span className="brand-type"><strong>Tib-E-Nabwi</strong><span lang="ur" dir="rtl">طبِ نبوی</span></span></Link>;
+}
 function App() {
-  const [lang, setLang] = useState<Lang>(() => localStorage.getItem('tn-lang') === 'ur' ? 'ur' : 'en');
-  const [cart, setCart] = useState<CartLine[]>(() => {
-    try { return JSON.parse(localStorage.getItem('tn-cart') || '[]') as CartLine[]; } catch { return []; }
-  });
+  const [cart, setCart] = useState<CartLine[]>(() => { try { return JSON.parse(localStorage.getItem('tn-cart') || '[]') as CartLine[]; } catch { return []; } });
   const [cartOpen, setCartOpen] = useState(false);
-  useEffect(() => {
-    document.documentElement.lang = lang === 'ur' ? 'ur' : 'en';
-    document.documentElement.dir = lang === 'ur' ? 'rtl' : 'ltr';
-    localStorage.setItem('tn-lang', lang);
-  }, [lang]);
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   useEffect(() => { localStorage.setItem('tn-cart', JSON.stringify(cart)); }, [cart]);
-  const add = (slug: string) => setCart((current) => {
-    const found = current.find((line) => line.slug === slug);
-    return found ? current.map((line) => line.slug === slug ? { ...line, quantity: line.quantity + 1 } : line) : [...current, { slug, quantity: 1 }];
-  });
-  const change = (slug: string, delta: number) => setCart((current) => current.map((line) => line.slug === slug ? { ...line, quantity: line.quantity + delta } : line).filter((line) => line.quantity > 0));
-  const remove = (slug: string) => setCart((current) => current.filter((line) => line.slug !== slug));
+  useEffect(() => { document.documentElement.lang = 'en'; document.documentElement.dir = 'ltr'; }, []);
+  const add = (slug: string) => setCart(current => current.some(line => line.slug === slug) ? current.map(line => line.slug === slug ? { ...line, quantity: line.quantity + 1 } : line) : [...current, { slug, quantity: 1 }]);
+  const change = (slug: string, delta: number) => setCart(current => current.map(line => line.slug === slug ? { ...line, quantity: line.quantity + delta } : line).filter(line => line.quantity > 0));
+  const remove = (slug: string) => setCart(current => current.filter(line => line.slug !== slug));
   const count = cart.reduce((sum, line) => sum + line.quantity, 0);
-  const ctx = useMemo(() => ({ lang, setLang, cart, add, change, remove, count }), [lang, cart, count]);
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <StoreContext.Provider value={ctx}>
-          <div className="site-shell" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
-            <a className="skip-link" href="#main-content">{copy(lang, 'Skip to content', 'مواد پر جائیں')}</a>
-            <Header onCart={() => setCartOpen(true)} />
-            <RoutedErrorBoundary>
-              <Switch>
-                <Route path="/" component={Home} />
-                <Route path="/products" component={Catalog} />
-                <Route path="/checkout" component={Checkout} />
-                <Route path="/product/:slug" component={ProductDetail} />
-                <Route component={MissingPage} />
-              </Switch>
-            </RoutedErrorBoundary>
-            <Footer />
-            {cartOpen && <CartDrawer close={() => setCartOpen(false)} />}
-          </div>
-          <Toaster />
-        </StoreContext.Provider>
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
+  const ctx = useMemo(() => ({ cart, add, change, remove, count, openCart: () => setCartOpen(true), preview: setPreviewSrc }), [cart, count]);
+  return <QueryClientProvider client={queryClient}><TooltipProvider><StoreContext.Provider value={ctx}>
+    <div className="site-shell"><a className="skip-link" href="#main-content"><Bi en="Skip to content" ur="مواد پر جائیں" /></a><Header />
+      <RoutedErrorBoundary><Switch><Route path="/" component={Home}/><Route path="/products" component={Catalog}/><Route path="/checkout" component={Checkout}/><Route path="/product/:slug" component={ProductDetail}/><Route component={MissingPage}/></Switch></RoutedErrorBoundary>
+      <Footer />{cartOpen && <CartDrawer close={() => setCartOpen(false)}/>}
+      {previewSrc && <ImagePreview src={previewSrc} close={() => setPreviewSrc(null)}/>}
+    </div><Toaster/>
+  </StoreContext.Provider></TooltipProvider></QueryClientProvider>;
 }
-
-function Header({ onCart }: { onCart: () => void }) {
-  const { lang, setLang, count } = useStore();
-  const [location] = useLocation();
-  const nav = [
-    { href: '/', en: 'Home', ur: 'صفحۂ اول' },
-    { href: '/products', en: 'The collection', ur: 'مصنوعات' },
-    { href: '/checkout', en: 'Preview checkout', ur: 'چیک آؤٹ کا پیش منظر' },
-  ];
-  return <>
-    <div className="announcement" data-testid="notice-contact">
-      <div className="announcement-inner">
-        <span>{copy(lang, 'Contact on WhatsApp to order', 'آرڈر کے لیے واٹس ایپ پر رابطہ کریں')}</span>
-        <span aria-hidden="true">·</span>
-        <span>{copy(lang, 'Contact no.:', 'رابطہ نمبر:')} <bdi>{STORE_CONFIG.whatsappNumber}</bdi></span>
-      </div>
-    </div>
-    <header className="site-header">
-      <div className="container-wide header-main">
-        <Link href="/" className="brand-mark" aria-label={copy(lang, 'Tib-E-Nabwi home', 'طبِ نبوی صفحۂ اول')} data-testid="link-brand">
-          <span className="brand-symbol"><Sprout size={20} strokeWidth={1.5} /></span>
-          <span><span className="brand-name">Tib-E-Nabwi</span><span className="brand-subtitle">{copy(lang, 'Botanical goods', 'نباتاتی اشیاء')}</span></span>
-        </Link>
-        <nav className="nav-links" aria-label={copy(lang, 'Main navigation', 'مرکزی نیویگیشن')}>
-          {nav.map((item) => <Link key={item.href} href={item.href} className="nav-link" aria-current={location === item.href ? 'page' : undefined} data-testid={`link-nav-${item.href === '/' ? 'home' : item.href.slice(1)}`}>{copy(lang, item.en, item.ur)}</Link>)}
-        </nav>
-        <div className="header-actions">
-          <button className="language-toggle" onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} aria-label={copy(lang, 'Switch language to Urdu', 'زبان انگریزی میں تبدیل کریں')} data-testid="button-language">{lang === 'en' ? 'اردو' : 'English'}</button>
-          <button className="icon-button" onClick={onCart} aria-label={`${copy(lang, 'Open shopping bag', 'خریداری کا بیگ کھولیں')}, ${count}`} data-testid="button-open-cart"><ShoppingBag size={16} /><span className="cart-label">{copy(lang, 'Bag', 'بیگ')}</span><span className="cart-count" data-testid="text-cart-count">{count}</span></button>
-        </div>
-      </div>
-    </header>
-  </>;
+function Header() {
+  const { count, openCart } = useStore(); const [location] = useLocation();
+  const nav = [{ href: '/', en: 'Home', ur: 'صفحۂ اول' }, { href: '/products', en: 'The product', ur: 'مصنوعات' }, { href: '/checkout', en: 'Order enquiry', ur: 'آرڈر کی تفصیل' }];
+  return <><div className="topline"><span><Bi en="A closer look at Al-Mizan" ur="المیزان کا ایک قریب سے تعارف"/></span><a href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer"><Bi en="WhatsApp" ur="واٹس ایپ"/> <bdi>{number}</bdi></a></div><header className="site-header"><div className="container-wide header-main"><Brand/><nav className="nav-links" aria-label="Main navigation"><div className="sr-only">Main navigation — مرکزی نیویگیشن</div>{nav.map(item=><Link key={item.href} href={item.href} className="nav-link" aria-current={location === item.href ? 'page' : undefined} data-testid={`link-nav-${item.href === '/' ? 'home' : item.href.slice(1)}`}><Bi en={item.en} ur={item.ur}/></Link>)}</nav><button className="bag-trigger" onClick={openCart} aria-label={`Open bag, shopping bag کھولیں, ${count} items`} data-testid="button-open-cart"><ShoppingBag size={17}/><span><Bi en="Bag" ur="بیگ"/></span><b className="cart-count" data-testid="text-cart-count">{count}</b></button></div></header></>;
 }
-
-function ProductArt({ product, detail = false }: { product: Product; detail?: boolean }) {
-  const { lang } = useStore();
-  return <div className={`${detail ? 'detail-art' : 'product-art'} ${product.art}`} aria-label={copy(lang, 'Illustrative sample botanical product', 'نباتاتی مصنوعات کی نمائشی تصویر')} role="img">
-    {!detail && <span className="sample-pill">{copy(lang, 'Sample', 'نمونہ')}</span>}
-    <span className="botanical" aria-hidden="true" />
-  </div>;
-}
-
-function ProductCard({ product }: { product: Product }) {
-  const { lang, add } = useStore();
-  return <article className={`product-card ${product.art}`} data-testid={`card-product-${product.slug}`}>
-    <Link href={`/product/${product.slug}`} className="product-card-link" aria-label={`${copy(lang, 'View', 'دیکھیں')} ${productCopy(product, lang)}`}><ProductArt product={product} /></Link>
-    <div className="product-card-body">
-      <h3><Link href={`/product/${product.slug}`} className="product-title-link" data-testid={`link-product-${product.slug}`}>{productCopy(product, lang)}</Link></h3>
-      <div className="local-name">{localCopy(product, lang)}</div>
-      <p className="product-description">{productDescription(product, lang)}</p>
-      <span className="price-note">{copy(lang, 'Price to be confirmed', 'قیمت کی تصدیق باقی ہے')}</span>
-      <div className="product-footer">
-        <Link href={`/product/${product.slug}`}>{copy(lang, 'Explore sample', 'نمونہ دیکھیں')} <ArrowRight size={13} aria-hidden="true" /></Link>
-        <button className="add-button" onClick={() => add(product.slug)} aria-label={`${copy(lang, 'Add sample to demo bag', 'نمونہ ڈیمو بیگ میں شامل کریں')}: ${productCopy(product, lang)}`} data-testid={`button-add-${product.slug}`}><Plus size={16} /></button>
-      </div>
-    </div>
-  </article>;
-}
-
 function Home() {
-  const { lang } = useStore();
-  const heroImg = `${import.meta.env.BASE_URL}herbal-courtyard.jpg`;
+  const { add, preview } = useStore();
   return <main id="main-content" data-testid="page-home">
-    <section className="hero">
-      <div className="hero-image" style={{ backgroundImage: `url("${heroImg}")` }} aria-hidden="true" />
-      <div className="hero-content">
-        <div className="eyebrow fade-up">{copy(lang, 'A neighborhood apothecary, reimagined', 'محلے کی جڑی بوٹیوں کی دکان، ایک نئے انداز میں')}</div>
-        <h1 className="fade-up delay-1">{copy(lang, 'A little closer to the garden.', 'قدرت کی خوشبو، آپ کے قریب۔')}</h1>
-        <p className="fade-up delay-2">{copy(lang, 'A thoughtful home for botanical goods, familiar traditions and the small rituals that make a place feel like yours.', 'نباتاتی اشیاء، مانوس روایات اور روزمرہ کے ان چھوٹے معمولات کے لیے ایک پیارا سا گوشہ جو گھر جیسا احساس دیں۔')}</p>
-        <p className="hero-urdu fade-up delay-2" lang="ur" dir="rtl">{copy(lang, 'Thoughtfully gathered. Warmly shared.', 'محبت سے چنی ہوئی چیزیں، خلوص سے پیش کی گئی۔')}</p>
-        <div className="button-row fade-up delay-3">
-          <Link href="/products" className="button-primary" data-testid="link-hero-products">{copy(lang, 'Browse the collection', 'مصنوعات دیکھیں')} <ArrowUpRight size={15} /></Link>
-          <Link href="/checkout" className="button-outline" data-testid="link-hero-checkout">{copy(lang, 'Checkout preview', 'چیک آؤٹ کا پیش منظر')}</Link>
-        </div>
+    <section className="hero"><div className="hero-visual"><img src={asset(product.photo)} alt="The genuine Al-Mizan jar shown from front and back" data-testid="image-hero-product" onClick={() => preview(asset(product.photo))}/><span className="photo-caption"><Bi en="The original pack · front & back" ur="اصل پیک · سامنے اور پچھلی جانب"/></span><span className="hero-orbit orbit-one"/><span className="hero-orbit orbit-two"/></div>
+      <div className="hero-content"><div className="eyebrow"><span className="eyebrow-dot"/>TIB-E-NABWI <span lang="ur" dir="rtl">طبِ نبوی</span></div><h1><span lang="en" dir="ltr">A measured blend.<br/><i>Al-Mizan.</i></span><span lang="ur" dir="rtl" className="urdu hero-title-ur">ایک متوازن آمیزہ۔<br/>المیزان۔</span></h1><p className="hero-intro"><Bi en="A closer, clearer look at one herbal powder—its pack, label-listed ingredients, and confirmed price." ur="ایک ہربل پاؤڈر کا واضح تعارف—اس کی پیکنگ، لیبل پر درج اجزاء اور تصدیق شدہ قیمت۔"/></p>
+        <div className="hero-price"><div><strong data-testid="text-product-price">{money(product.price)}</strong><small><Bi en="200 g pack" ur="۲۰۰ گرام پیک"/></small></div><span className="price-rule"/></div>
+        <div className="button-row"><button className="button-primary" onClick={()=>{add(product.slug);}} data-testid="button-add-al-mizan"><Bi en="Add to bag" ur="بیگ میں شامل کریں"/> <Plus size={17}/></button><Link href="/product/al-mizan" className="button-text" data-testid="link-hero-details"><Bi en="Explore the details" ur="تفصیلات دیکھیں"/> <ArrowUpRight size={16}/></Link></div>
+        <p className="handoff-note"><Bi en="Order enquiry opens WhatsApp for you to review and send." ur="آرڈر کی درخواست واٹس ایپ میں کھلے گی، جہاں آپ اسے دیکھ کر خود بھیجیں گے۔"/></p>
       </div>
+      <a className="scroll-cue" href="#product-story"><span><Bi en="A little further" ur="مزید نیچے"/></span><ArrowDown size={14}/></a>
     </section>
-
-    <section className="section" id="collection">
-      <div className="container-wide">
-        <div className="section-head">
-          <div><span className="eyebrow">{copy(lang, 'From the sample shelf', 'نمائشی شیلف سے')}</span><h2>{copy(lang, 'A collection in the making', 'ایک مجموعہ جو تشکیل پا رہا ہے')}</h2></div>
-          <div><p>{copy(lang, 'These illustrative listings show how a future catalogue might feel. Every product, ingredient and price is a sample until confirmed by the shop.', 'یہ نمائشی فہرستیں مستقبل کے کیٹلاگ کا انداز دکھاتی ہیں۔ دکان سے تصدیق ہونے تک ہر مصنوعات، جزو اور قیمت صرف نمونہ ہے۔')}</p><Link className="button-quiet" href="/products" data-testid="link-home-all-samples">{copy(lang, 'See all samples', 'تمام نمونے دیکھیں')} <ArrowRight size={14} /></Link></div>
-        </div>
-        <div className="product-grid">{products.map((product) => <ProductCard key={product.slug} product={product} />)}</div>
-      </div>
-    </section>
-
-    <section className="section" style={{ background: '#f0eee4' }}>
-      <div className="container-wide story-grid">
-        <div className="story-visual" role="img" aria-label={copy(lang, 'Abstract botanical still life in a sunlit courtyard', 'دھوپ سے روشن صحن میں نباتاتی اشیاء کا تجریدی منظر')}><span className="story-orb" /><span className="story-leaf" /><span className="story-note">{copy(lang, 'Rooted in everyday rituals', 'روزمرہ روایتوں سے جڑا')}</span></div>
-        <div className="story-copy">
-          <span className="eyebrow">{copy(lang, 'A little about our way', 'ہمارے انداز کے بارے میں')}</span>
-          <h2>{copy(lang, 'A familiar feeling, with room to grow.', 'مانوس احساس، آگے بڑھنے کی گنجائش کے ساتھ۔')}</h2>
-          <div className="story-rule" />
-          <p>{copy(lang, 'Tib-E-Nabwi is a welcoming place to discover botanical goods and everyday objects. We are preparing this storefront as a home for a real catalogue, with clear details to come from the people who know each product best.', 'طبِ نبوی نباتاتی اشیاء اور روزمرہ کی چیزوں کو دریافت کرنے کی ایک پُرخلوص جگہ ہے۔ ہم اس اسٹور کو حقیقی کیٹلاگ کے لیے تیار کر رہے ہیں، جس میں ہر مصنوعات کی درست تفصیل فراہم کی جائے گی۔')}</p>
-          <p lang="ur" dir="rtl" className="urdu">{copy(lang, 'ہر چیز کے بارے میں درست اور واضح معلومات ہماری ترجیح ہیں۔', 'ہر چیز کے بارے میں درست اور واضح معلومات ہماری ترجیح ہیں۔')}</p>
-          <Link href="/products" className="button-outline">{copy(lang, 'Explore the sample shelf', 'نمائشی شیلف دیکھیں')} <ArrowUpRight size={14} /></Link>
-        </div>
-      </div>
-    </section>
-
-    <section className="values-band">
-      <div className="container-wide values-grid">
-        <Value icon={<Leaf size={18} />} title={copy(lang, 'A gentler point of view', 'نرم اور سادہ نقطۂ نظر')} text={copy(lang, 'A considered space for botanicals, without promises or guesswork.', 'نباتاتی اشیاء کے لیے ایک باوقار جگہ، بغیر کسی غیر مصدقہ دعوے کے۔')} />
-        <Value icon={<CircleHelp size={18} />} title={copy(lang, 'Details before decisions', 'فیصلے سے پہلے تفصیل')} text={copy(lang, 'Ingredients, sizes and prices will be confirmed by the shop.', 'اجزاء، مقدار اور قیمتوں کی تصدیق دکان کی جانب سے کی جائے گی۔')} />
-        <Value icon={<Sprout size={18} />} title={copy(lang, 'Made to feel familiar', 'مانوس احساس کے لیے')} text={copy(lang, 'English and Urdu, with a distinctly local sense of welcome.', 'انگریزی اور اردو، ایک مقامی اور اپنائیت بھرے انداز میں۔')} />
-      </div>
-    </section>
-
-    <section className="section">
-      <div className="container-wide journal-card">
-        <div className="journal-art" role="img" aria-label={copy(lang, 'Soft abstract botanical forms', 'نرم تجریدی نباتاتی اشکال')} />
-        <div className="journal-copy">
-          <span className="eyebrow">{copy(lang, 'A note on the preview', 'اس پیش منظر کے بارے میں')}</span>
-          <h2>{copy(lang, 'Good information grows from real beginnings.', 'اچھی معلومات حقیقی بنیاد سے جنم لیتی ہیں۔')}</h2>
-          <p>{copy(lang, 'The items you see are sample concepts, not a live catalogue. Once genuine product details are ready, this space can share ingredients, sizes and care notes in both languages.', 'یہاں دکھائی گئی اشیاء نمائشی مثالیں ہیں، فعال کیٹلاگ نہیں۔ حقیقی معلومات دستیاب ہونے پر یہاں اجزاء، مقدار اور استعمال کی تفصیلات دونوں زبانوں میں شامل کی جا سکتی ہیں۔')}</p>
-          <Link href="/products" className="button-quiet">{copy(lang, 'View sample products', 'نمائشی مصنوعات دیکھیں')} <ArrowRight size={14} /></Link>
-        </div>
-      </div>
-    </section>
-
-    <section className="section-tight">
-      <div className="container-wide proof-note" data-testid="note-no-social-proof">
-        <ShieldCheck className="proof-icon" size={22} />
-        <p>{copy(lang, 'Verified reviews and store statistics will appear here only after genuine orders and real data exist. This preview does not display customer quotes, ratings or sales claims.', 'تصدیق شدہ جائزے اور دکان کے اعداد و شمار حقیقی آرڈرز اور مستند معلومات کے بعد ہی یہاں دکھائے جائیں گے۔ اس پیش منظر میں صارفین کے تبصرے، درجہ بندی یا فروخت کے دعوے شامل نہیں ہیں۔')}</p>
-        <p className="urdu" lang="ur" dir="rtl">{copy(lang, 'شفافیت، ہر دعوے سے زیادہ اہم ہے۔', 'شفافیت، ہر دعوے سے زیادہ اہم ہے۔')}</p>
-      </div>
-    </section>
-
-    <section className="final-cta">
-      <div className="container-wide">
-        <span className="eyebrow" style={{ justifyContent: 'center' }}>{copy(lang, 'Come have a look', 'آئیے، ایک نظر دیکھیں')}</span>
-        <h2>{copy(lang, 'The first page of something good.', 'ایک اچھی شروعات کا پہلا صفحہ۔')}</h2>
-        <p>{copy(lang, 'Browse sample products or try the bilingual checkout preview. Nothing is sold or submitted from this demo.', 'نمائشی مصنوعات دیکھیں یا دو لسانی چیک آؤٹ کا پیش منظر آزمائیں۔ اس ڈیمو سے کوئی آرڈر جمع یا فروخت نہیں ہوتا۔')}</p>
-        <div className="button-row" style={{ justifyContent: 'center' }}>
-          <Link href="/products" className="button-primary" data-testid="link-cta-products">{copy(lang, 'Visit the collection', 'مصنوعات دیکھیں')} <ArrowRight size={15} /></Link>
-          <Link href="/checkout" className="button-outline" data-testid="link-cta-checkout">{copy(lang, 'Try checkout preview', 'چیک آؤٹ پیش منظر آزمائیں')}</Link>
-        </div>
-      </div>
-    </section>
+    <section className="intro-band" id="product-story"><div className="container-wide intro-inner"><div className="section-index">01 <span/></div><div><span className="eyebrow"><Bi en="One product, in focus" ur="ایک مصنوعہ، واضح تعارف"/></span><h2><Bi en={<>Al-Mizan Herbal<br/>Powder</>} ur={<>المیزان ہربل<br/>پاؤڈر</>}/></h2></div><p className="intro-copy"><Bi en="A straightforward listing from Tib-E-Nabwi. The details below are limited to what the shop owner has confirmed and what appears on the product label." ur="طبِ نبوی کی جانب سے ایک واضح فہرست۔ ذیل کی تفصیل صرف دکاندار کی تصدیق اور مصنوعات کے لیبل پر درج معلومات تک محدود ہے۔"/></p></div></section>
+    <section className="detail-section container-wide"><div className="detail-photo"><img src={asset('al-mizan-ingredients.jpg')} alt="Decorative still life of botanical ingredients; it does not verify product contents" loading="lazy"/><span className="image-label"><Bi en="Botanical still life · illustrative" ur="نباتاتی منظر · صرف آرائشی"/></span></div><div className="detail-copy"><span className="eyebrow"><Bi en="What the label lists" ur="لیبل پر درج اجزاء"/></span><h2><Bi en="Seven names.<br/>No extra promises." ur="سات اجزاء۔<br/>بغیر اضافی دعووں کے۔"/></h2><p><Bi en="These ingredient names are transcribed from the supplied packaging label; the formulation has not been independently verified." ur="اجزاء کے یہ نام فراہم کردہ پیکنگ کے لیبل سے نقل کیے گئے ہیں؛ ترکیب کی آزادانہ تصدیق نہیں کی گئی۔"/></p><ul className="ingredient-list">{ingredients.map(([en,ur],i)=><li key={en}><span className="ingredient-no">0{i+1}</span><span className="ingredient-names"><span lang="en" dir="ltr">{en}</span><span lang="ur" dir="rtl" className="urdu">{ur}</span></span><Leaf size={14}/></li>)}</ul><Link href="/product/al-mizan" className="button-outline" data-testid="link-ingredient-details"><Bi en="See product details" ur="مصنوعات کی تفصیل دیکھیں"/> <ArrowRight size={15}/></Link></div></section>
+    <section className="image-ribbon"><img src={asset('al-mizan-botanicals.jpg')} alt="Decorative still life of herbs and seeds; not evidence of product contents" loading="lazy"/><div className="ribbon-shade"/><div className="ribbon-copy"><span className="eyebrow"><Bi en="A note on the imagery" ur="تصاویر کے بارے میں نوٹ"/></span><h2><Bi en="Atmosphere, not evidence." ur="صرف منظر، ثبوت نہیں۔"/></h2><p><Bi en="These ingredient photographs are decorative still lifes. They are not a verification of what is inside the pack." ur="یہ اجزاء کی آرائشی تصاویر ہیں۔ یہ پیک کے اندر موجود چیزوں کی تصدیق نہیں کرتیں۔"/></p></div></section>
+    <section className="purchase-band"><div className="container-wide purchase-inner"><div><span className="eyebrow"><Bi en="The confirmed details" ur="تصدیق شدہ تفصیل"/></span><h2><Bi en="Al-Mizan, simply." ur="المیزان، سادہ انداز میں۔"/></h2><p><Bi en="One 200 g pack. The listed selling price is PKR 2,500." ur="ایک ۲۰۰ گرام پیک۔ درج شدہ فروخت کی قیمت ۲,۵۰۰ پاکستانی روپے ہے۔"/></p></div><div className="purchase-action"><strong>{money(product.price)}</strong><span><Bi en="200 g" ur="۲۰۰ گرام"/></span><button className="button-primary" onClick={()=>add(product.slug)} data-testid="button-add-featured"><Bi en="Add to bag" ur="بیگ میں شامل کریں"/> <ShoppingBag size={16}/></button></div></div></section>
+    <section className="review-note container-wide" data-testid="note-no-reviews"><div className="review-seal"><span>TN</span></div><div><span className="eyebrow"><Bi en="A clear note" ur="ایک واضح نوٹ"/></span><h2><Bi en="No verified reviews yet." ur="ابھی تصدیق شدہ جائزے موجود نہیں۔"/></h2><p><Bi en="We do not display customer reviews until genuine, verifiable feedback is available." ur="حقیقی اور قابلِ تصدیق رائے دستیاب ہونے تک صارفین کے جائزے یہاں نہیں دکھائے جاتے۔"/></p></div></section>
+    <section className="last-cta"><div className="container-wide last-cta-inner"><div className="cta-mark"><Mark/></div><div><span className="eyebrow"><Bi en="Ready to ask?" ur="پوچھنے کے لیے تیار؟"/></span><h2><Bi en="Take a closer look.<br/>Then decide." ur="تفصیل دیکھیں۔<br/>پھر فیصلہ کریں۔"/></h2></div><div className="cta-actions"><button className="button-primary" onClick={()=>add(product.slug)} data-testid="button-add-last"><Bi en="Add to bag" ur="بیگ میں شامل کریں"/> <Plus size={16}/></button><a className="button-outline" href={`https://wa.me/${waNumber}?text=${encodeURIComponent(`Hello Tib-E-Nabwi, I would like to enquire about ${product.name} (200 g), quantity 1, listed price PKR 2,500.\\n\\nالسلام علیکم، میں ${product.ur} (۲۰۰ گرام) کے بارے میں دریافت کرنا چاہتا/چاہتی ہوں، مقدار ۱، درج شدہ قیمت ۲۵۰۰ پاکستانی روپے۔`)}`} target="_blank" rel="noreferrer" data-testid="link-whatsapp-direct"><Bi en="Ask on WhatsApp" ur="واٹس ایپ پر دریافت کریں"/> <ArrowUpRight size={15}/></a></div></div></section>
   </main>;
 }
-
-function Value({ icon, title, text }: { icon: ReactNode; title: string; text: string }) {
-  return <div className="value-item"><div className="value-icon">{icon}</div><div><h3>{title}</h3><p>{text}</p></div></div>;
+function ProductCard() {
+  const { add, preview }=useStore();
+  return <article className="catalog-product" data-testid={`card-product-${product.slug}`}><button className="catalog-image" aria-label="Preview original Al-Mizan pack, المیزان کی اصل پیکنگ دیکھیں" onClick={()=>preview(asset(product.photo))}><img src={asset(product.photo)} alt="Original Al-Mizan packaging, front and back"/></button><div className="catalog-card-copy"><span className="eyebrow"><Bi en="HERBAL POWDER · 200 G" ur="ہربل پاؤڈر · ۲۰۰ گرام"/></span><h2><Bi en={product.name} ur={product.ur}/></h2><p><Bi en="Label-listed botanicals, in a 200 g pack." ur="لیبل پر درج نباتاتی اجزاء، ۲۰۰ گرام پیک میں۔"/></p><div className="catalog-bottom"><strong>{money(product.price)}</strong><button className="button-primary" onClick={()=>add(product.slug)} data-testid={`button-add-${product.slug}`}><Bi en="Add to bag" ur="بیگ میں شامل کریں"/> <Plus size={15}/></button></div><Link href="/product/al-mizan" className="catalog-detail-link" data-testid="link-product-al-mizan"><Bi en="View product details" ur="مصنوعات کی تفصیل دیکھیں"/> <ArrowRight size={14}/></Link></div></article>;
 }
-
 function Catalog() {
-  const { lang } = useStore();
-  const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('All');
-  const categories = ['All', 'Seeds', 'Herbal blends', 'Oils', 'Botanicals'];
-  const filtered = products.filter((p) => (filter === 'All' || p.category === filter) && `${p.name} ${p.ur} ${p.category}`.toLowerCase().includes(search.toLowerCase()));
-  const urCategory: Record<string, string> = { All: 'تمام', Seeds: 'بیج', 'Herbal blends': 'جڑی بوٹیوں کے آمیزے', Oils: 'تیل', Botanicals: 'نباتات' };
-  return <main id="main-content" data-testid="page-products">
-    <div className="page-hero"><div className="container-wide"><span className="eyebrow">{copy(lang, 'The collection', 'مصنوعات')}</span><h1>{copy(lang, 'A shelf of possibilities.', 'امکانات سے بھرا ایک شیلف۔')}</h1><p>{copy(lang, 'A preview catalogue with illustrative botanical items. Product names are placeholders; descriptions, ingredients, sizes and prices are not confirmed.', 'نباتاتی اشیاء کے نمائشی کیٹلاگ کا پیش منظر۔ نام عارضی ہیں؛ تفصیل، اجزاء، مقدار اور قیمت کی تصدیق نہیں ہوئی۔')}</p></div></div>
-    <section className="section"><div className="container-wide">
-      <div className="catalog-controls">
-        <div className="search-field"><Search size={15} /><input aria-label={copy(lang, 'Search sample products', 'نمائشی مصنوعات تلاش کریں')} placeholder={copy(lang, 'Search the sample shelf', 'نمائشی شیلف تلاش کریں')} value={search} onChange={(e) => setSearch(e.target.value)} data-testid="input-product-search" /></div>
-        <div className="filter-row" role="group" aria-label={copy(lang, 'Filter products by category', 'مصنوعات کو زمرے کے لحاظ سے فلٹر کریں')}>
-          {categories.map((cat) => <button key={cat} className={`filter-chip ${cat === filter ? 'active' : ''}`} aria-pressed={filter === cat} onClick={() => setFilter(cat)} data-testid={`filter-${cat.toLowerCase().replaceAll(' ', '-')}`}>{copy(lang, cat, urCategory[cat])}</button>)}
-        </div>
-      </div>
-      {filtered.length > 0 ? <div className="product-grid">{filtered.map((product) => <ProductCard key={product.slug} product={product} />)}</div> : <div className="empty-cart"><PackageOpen size={28} /><h3>{copy(lang, 'Nothing on this shelf yet', 'اس شیلف پر ابھی کچھ نہیں')}</h3><p>{copy(lang, 'Try another search or choose a different category.', 'دوسری تلاش یا زمرہ منتخب کریں۔')}</p><button className="button-outline" onClick={() => { setSearch(''); setFilter('All'); }}>{copy(lang, 'Clear filters', 'فلٹر صاف کریں')}</button></div>}
-    </div></section>
-    <div className="container-wide" style={{ paddingBottom: 56 }}><div className="notice-strip">{copy(lang, 'Every item on this page is a clearly marked sample. Prices are to be confirmed; no purchase can be completed in this preview.', 'اس صفحے کی ہر چیز واضح طور پر نمونہ ہے۔ قیمت کی تصدیق باقی ہے؛ اس پیش منظر میں خریداری مکمل نہیں کی جا سکتی۔')}</div></div>
-  </main>;
+  const [search,setSearch]=useState('');
+  const found=`${product.name} ${product.ur} herbal powder`.toLowerCase().includes(search.toLowerCase());
+  return <main id="main-content" data-testid="page-products"><section className="catalog-hero"><div className="container-wide"><span className="eyebrow"><Bi en="The collection" ur="مصنوعات"/></span><h1><Bi en="One, clearly presented." ur="ایک مصنوعہ، واضح انداز میں۔"/></h1><p><Bi en="The current collection contains one product with owner-confirmed size and price." ur="موجودہ مجموعے میں ایک مصنوعات شامل ہے جس کی مقدار اور قیمت دکاندار نے تصدیق کی ہے۔"/></p></div><div className="catalog-number">01<span>/01</span></div></section><section className="container-wide catalog-main"><div className="catalog-toolbar"><div><span className="eyebrow"><Bi en="The shelf" ur="شیلف"/></span><p><Bi en="1 product" ur="۱ مصنوعات"/></p></div><label className="search-field"><Search size={16}/><span className="sr-only">Search product — مصنوعات تلاش کریں</span><input aria-label="Search product, مصنوعات تلاش کریں" placeholder="Search / تلاش کریں" value={search} onChange={e=>setSearch(e.target.value)} data-testid="input-product-search"/></label></div>{found?<ProductCard/>:<div className="empty-cart catalog-empty"><PackageOpen size={28}/><h2><Bi en="No match found." ur="کوئی نتیجہ نہیں ملا۔"/></h2><p><Bi en="Try another search term." ur="تلاش کے لیے کوئی دوسرا لفظ آزمائیں۔"/></p><button className="button-outline" onClick={()=>setSearch('')} data-testid="button-clear-search"><Bi en="Clear search" ur="تلاش صاف کریں"/></button></div>}</section></main>;
 }
-
 function ProductDetail() {
-  const { lang, add } = useStore();
-  const [, params] = useRoute('/product/:slug');
-  const product = products.find((item) => item.slug === params?.slug);
-  if (!product) return <MissingPage />;
-  return <main id="main-content" data-testid="page-product-detail">
-    <div className="container-wide" style={{ padding: '27px 0' }}><Link href="/products" className="button-quiet"><ArrowLeft size={14} />{copy(lang, 'Back to sample collection', 'نمائشی مصنوعات پر واپس')}</Link></div>
-    <section className="section-tight"><div className="container-wide detail-layout">
-      <ProductArt product={product} detail />
-      <div className="detail-copy">
-        <span className="eyebrow">{copy(lang, 'Illustrative sample · not a live listing', 'نمائشی مثال · فعال فہرست نہیں')}</span>
-        <h1>{productCopy(product, lang)}</h1><div className="local-name">{localCopy(product, lang)}</div>
-        <div className="detail-meta"><strong>{copy(lang, 'Price to be confirmed', 'قیمت کی تصدیق باقی ہے')}</strong><span>{copy(lang, 'Sample item', 'نمائشی شے')}</span></div>
-        <p>{productDescription(product, lang)}</p>
-        <p>{copy(lang, 'The shop owner can replace this preview with verified ingredients, size, origin and product care information. No efficacy or health claims are made here.', 'دکاندار اس پیش منظر کی جگہ تصدیق شدہ اجزاء، مقدار، ماخذ اور استعمال کی معلومات شامل کر سکتے ہیں۔ یہاں کوئی طبی یا افادیت کا دعویٰ نہیں کیا گیا۔')}</p>
-        <div className="preview-alert">{copy(lang, 'This is a sample product page. Adding it to the local demo bag does not reserve or purchase anything.', 'یہ نمائشی مصنوعات کا صفحہ ہے۔ اسے مقامی ڈیمو بیگ میں شامل کرنے سے کوئی چیز محفوظ یا خریدی نہیں جاتی۔')}</div>
-        <button className="button-primary" onClick={() => add(product.slug)} data-testid={`button-add-detail-${product.slug}`}><ShoppingBag size={15} />{copy(lang, 'Add sample to demo bag', 'نمونہ ڈیمو بیگ میں شامل کریں')}</button>
-      </div>
-    </div></section>
-  </main>;
+  const { add, preview }=useStore(); const [,params]=useRoute('/product/:slug');
+  if(params?.slug !== product.slug) return <MissingPage/>;
+  return <main id="main-content" data-testid="page-product-detail"><div className="detail-breadcrumb container-wide"><Link href="/products"><ArrowLeft size={14}/><Bi en="Back to the product" ur="مصنوعات پر واپس"/></Link></div><section className="product-detail container-wide"><div className="detail-hero-photo"><button onClick={()=>preview(asset(product.photo))} aria-label="Open original product photo — اصل مصنوعات کی تصویر کھولیں" data-testid="button-preview-product"><img src={asset(product.photo)} alt="Original Al-Mizan package front and back"/><span className="photo-zoom"><ArrowUpRight size={17}/></span></button><span className="image-label"><Bi en="Original packaging supplied by the shop" ur="دکان کی فراہم کردہ اصل پیکنگ"/></span></div><div className="detail-purchase"><span className="eyebrow"><Bi en="TIB-E-NABWI · PRODUCT 01" ur="طبِ نبوی · مصنوعہ ۰۱"/></span><h1><Bi en={product.name} ur={product.ur}/></h1><p className="detail-deck"><Bi en="Herbal powder · 200 g" ur="ہربل پاؤڈر · ۲۰۰ گرام"/></p><div className="detail-price"><strong>{money(product.price)}</strong><span><Bi en="Listed selling price" ur="درج شدہ فروخت کی قیمت"/></span></div><p><Bi en="The product name, pack size and listed selling price are supplied by the shop owner." ur="مصنوعات کا نام، پیک کا وزن اور درج شدہ فروخت کی قیمت دکاندار نے فراہم کی ہے۔"/></p><button className="button-primary add-wide" onClick={()=>add(product.slug)} data-testid="button-add-detail-al-mizan"><Bi en="Add to bag" ur="بیگ میں شامل کریں"/> <ShoppingBag size={17}/></button><p className="handoff-note"><Bi en="Your bag stays in this browser. Continue to WhatsApp to review and send an enquiry." ur="آپ کا بیگ اسی براؤزر میں رہے گا۔ واٹس ایپ پر جا کر درخواست دیکھیں اور خود بھیجیں۔"/></p><a className="detail-wa" href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer"><Bi en="Contact" ur="رابطہ"/> <bdi>{number}</bdi> <ArrowUpRight size={14}/></a></div></section><section className="detail-ingredients container-wide"><div className="ingredient-aside"><span className="section-index">01 <span/></span><span className="eyebrow"><Bi en="On the label" ur="لیبل پر درج"/></span><h2><Bi en="Ingredients,<br/>as listed." ur="اجزاء،<br/>جیسا درج ہیں۔"/></h2><p><Bi en="Names transcribed from the supplied packaging. This is not independent verification of the formulation." ur="نام فراہم کردہ پیکنگ سے نقل کیے گئے ہیں۔ یہ ترکیب کی آزادانہ تصدیق نہیں ہے۔"/></p></div><div className="ingredient-detail-list">{ingredients.map(([en,ur],i)=><div className="ingredient-detail-row" key={en}><span>0{i+1}</span><b><span lang="en" dir="ltr">{en}</span><span className="urdu" lang="ur" dir="rtl">{ur}</span></b><Leaf size={15}/></div>)}</div></section><section className="detail-image-strip"><img src={asset('al-mizan-herbs.jpg')} alt="Decorative herbs and seeds still life; does not verify contents" loading="lazy"/><div><span className="eyebrow"><Bi en="Decorative photography" ur="آرائشی تصویر"/></span><p><Bi en="The accompanying herb imagery is illustrative only; it does not establish the contents or effects of the product." ur="ساتھ دی گئی نباتاتی تصاویر صرف آرائشی ہیں؛ یہ مصنوعات کے اجزاء یا اثرات ثابت نہیں کرتیں۔"/></p></div></section></main>;
 }
-
+function getTotal(cart:CartLine[]) { return cart.reduce((sum,line)=>sum+line.quantity*product.price,0); }
+function orderMessage(cart:CartLine[]) {
+  const quantity=cart.find(line=>line.slug===product.slug)?.quantity ?? 0;
+  const en=quantity ? `Hello Tib-E-Nabwi, I would like to enquire about:\n${product.name} — ${quantity} × ${money(product.price)} = ${money(quantity*product.price)}\nPlease confirm order details with me. This is an enquiry, not a placed order.` : 'Hello Tib-E-Nabwi, I would like to enquire about Al-Mizan Herbal Powder.';
+  const ur=quantity ? `السلام علیکم طبِ نبوی، میں اس کے بارے میں دریافت کرنا چاہتا/چاہتی ہوں:\n${product.ur} — ${quantity} × ۲,۵۰۰ پاکستانی روپے = ${quantity*2500} پاکستانی روپے\nبراہِ کرم آرڈر کی تفصیل کی تصدیق کریں۔ یہ صرف دریافت ہے، مکمل آرڈر نہیں۔` : 'السلام علیکم طبِ نبوی، میں المیزان ہربل پاؤڈر کے بارے میں دریافت کرنا چاہتا/چاہتی ہوں۔';
+  return encodeURIComponent(`${en}\n\n${ur}`);
+}
 function Checkout() {
-  const { lang, setLang, cart, change, remove } = useStore();
-  const [errors, setErrors] = useState<string[]>([]);
-  const [reviewed, setReviewed] = useState(false);
-  const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const [fields, setFields] = useState({ name: '', phone: '', city: '', address: '' });
-  const onSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    const next: string[] = [];
-    if (!fields.name.trim()) next.push(copy(lang, 'Please enter your name.', 'براہِ کرم اپنا نام درج کریں۔'));
-    if (!fields.phone.trim() || !/^[+()\d\s-]{7,20}$/.test(fields.phone)) next.push(copy(lang, 'Enter a valid phone number.', 'درست فون نمبر درج کریں۔'));
-    if (!fields.city.trim()) next.push(copy(lang, 'Please enter your city.', 'براہِ کرم اپنا شہر درج کریں۔'));
-    if (!fields.address.trim()) next.push(copy(lang, 'Please enter an address for this preview.', 'اس پیش منظر کے لیے پتہ درج کریں۔'));
-    setErrors(next);
-    setReviewed(next.length === 0);
-  };
-  return <main id="main-content" data-testid="page-checkout">
-    <div className="page-hero"><div className="container-wide"><span className="eyebrow">{copy(lang, 'Bilingual form demonstration', 'دو لسانی فارم کا مظاہرہ')}</span><h1>{copy(lang, 'Checkout preview.', 'چیک آؤٹ کا پیش منظر۔')}</h1><p>{copy(lang, 'A local-only demonstration of the checkout layout. No backend or payment connection is present.', 'چیک آؤٹ کے لے آؤٹ کا صرف مقامی مظاہرہ۔ کوئی بیک اینڈ یا ادائیگی کا نظام منسلک نہیں ہے۔')}</p></div></div>
-    <section className="section"><div className="container-wide checkout-wrap">
-      <section className="checkout-card">
-        <h2>{copy(lang, 'Your details', 'آپ کی تفصیلات')}</h2>
-        <p className="muted">{copy(lang, 'Use any details you like for the preview; nothing will be sent or stored as an order.', 'پیش منظر کے لیے کوئی بھی معلومات درج کریں؛ کچھ بھی آرڈر کے طور پر بھیجا یا محفوظ نہیں ہوگا۔')}</p>
-        <div className="preview-alert" role="note" data-testid="notice-checkout-preview"><strong>{copy(lang, 'Preview only. This form does not submit or charge a real order.', 'صرف پیش منظر۔ یہ فارم حقیقی آرڈر جمع نہیں کرتا اور نہ ہی کوئی رقم وصول کرتا ہے۔')}</strong><br />{copy(lang, 'No payment, delivery, COD, service-area or support commitment is being made.', 'ادائیگی، ڈیلیوری، کیش آن ڈیلیوری، سروس ایریا یا معاونت کا کوئی وعدہ نہیں کیا جا رہا۔')}</div>
-        {reviewed ? <div className="success-panel" role="status" data-testid="status-preview-reviewed"><Check size={20} /><h3>{copy(lang, 'Preview details reviewed', 'پیش منظر کی تفصیلات دیکھی گئیں')}</h3><p>{copy(lang, 'Nothing was submitted. No order was created and no payment was taken. You can edit the details below or leave this page.', 'کچھ بھی جمع نہیں کیا گیا۔ کوئی آرڈر نہیں بنایا گیا اور کوئی ادائیگی نہیں ہوئی۔ آپ نیچے معلومات بدل سکتے ہیں یا اس صفحے سے جا سکتے ہیں۔')}</p><button className="button-outline" onClick={() => setReviewed(false)}>{copy(lang, 'Edit preview details', 'پیش منظر کی تفصیلات میں ترمیم')}</button></div> : null}
-        <form onSubmit={onSubmit} noValidate data-testid="form-checkout">
-          <div className="field-grid">
-            <Field lang={lang} label="Full name" ur="پورا نام" name="name" value={fields.name} onChange={(value) => setFields({ ...fields, name: value })} required />
-            <Field lang={lang} label="Phone number" ur="فون نمبر" name="phone" value={fields.phone} onChange={(value) => setFields({ ...fields, phone: value })} required type="tel" />
-          </div>
-          <div className="field-grid">
-            <Field lang={lang} label="City" ur="شہر" name="city" value={fields.city} onChange={(value) => setFields({ ...fields, city: value })} required />
-            <div className="field"><label htmlFor="checkout-language">{copy(lang, 'Form language', 'فارم کی زبان')}</label><select id="checkout-language" value={lang} onChange={(e) => setLang(e.target.value as Lang)} data-testid="select-form-language"><option value="en">English</option><option value="ur">اردو</option></select></div>
-          </div>
-          <div className="field"><label htmlFor="checkout-address">{copy(lang, 'Address for preview', 'پیش منظر کے لیے پتہ')} <span aria-hidden="true">*</span></label><textarea id="checkout-address" value={fields.address} onChange={(e) => setFields({ ...fields, address: e.target.value })} required placeholder={copy(lang, 'Enter a sample address', 'نمونہ پتہ درج کریں')} data-testid="input-checkout-address" /></div>
-          <div className="field"><label htmlFor="checkout-note">{copy(lang, 'Optional note', 'اختیاری نوٹ')}</label><textarea id="checkout-note" placeholder={copy(lang, 'Anything you would like to see in a future store?', 'مستقبل کی دکان میں آپ کیا دیکھنا چاہیں گے؟')} data-testid="input-checkout-note" /></div>
-          {errors.length > 0 && <div className="field-error" role="alert" data-testid="status-form-errors">{errors.map((error) => <div key={error}>{error}</div>)}</div>}
-          <button type="submit" className="button-primary" style={{ marginTop: 8 }} data-testid="button-review-preview">{copy(lang, 'Review preview details', 'پیش منظر کی تفصیلات دیکھیں')} <ArrowRight size={15} /></button>
-        </form>
-      </section>
-      <aside className="summary-card">
-        <h2>{copy(lang, 'Demo bag', 'ڈیمو بیگ')}</h2><p className="muted">{copy(lang, `${itemCount} sample item${itemCount === 1 ? '' : 's'} · prices to be confirmed`, `${itemCount} نمائشی اشیاء · قیمت کی تصدیق باقی ہے`)}</p>
-        {cart.length ? cart.map((line) => {
-          const product = products.find((p) => p.slug === line.slug);
-          if (!product) return null;
-          return <div className="summary-row" key={line.slug}><div className="summary-product"><div className="mini-art"><Leaf size={18} /></div><div><h3>{productCopy(product, lang)}</h3><p>{copy(lang, 'Sample · Qty', 'نمونہ · تعداد')} {line.quantity}</p><button onClick={() => remove(line.slug)} className="button-quiet" style={{ padding: 0, minHeight: 24 }} data-testid={`button-remove-${line.slug}`}><Trash2 size={12} />{copy(lang, 'Remove', 'ہٹائیں')}</button></div></div><div className="quantity-controls"><button onClick={() => change(line.slug, -1)} aria-label={copy(lang, 'Decrease quantity', 'تعداد کم کریں')} data-testid={`button-decrease-${line.slug}`}><Minus size={12} /></button><span>{line.quantity}</span><button onClick={() => change(line.slug, 1)} aria-label={copy(lang, 'Increase quantity', 'تعداد بڑھائیں')} data-testid={`button-increase-${line.slug}`}><Plus size={12} /></button></div></div>;
-        }) : <div className="empty-cart"><ShoppingBag size={24} /><h3>{copy(lang, 'Your demo bag is empty', 'آپ کا ڈیمو بیگ خالی ہے')}</h3><p>{copy(lang, 'Add a sample item to preview a checkout summary.', 'چیک آؤٹ کا خلاصہ دیکھنے کے لیے نمائشی شے شامل کریں۔')}</p><Link href="/products" className="button-outline">{copy(lang, 'Browse samples', 'نمونے دیکھیں')}</Link></div>}
-        <div className="summary-bottom">
-          <div className="summary-row"><span>{copy(lang, 'Subtotal', 'ذیلی کل')}</span><strong>{copy(lang, 'To be confirmed', 'تصدیق باقی ہے')}</strong></div>
-          <div className="summary-row"><span>{copy(lang, 'Delivery', 'ڈیلیوری')}</span><strong>{copy(lang, 'Not set', 'طے نہیں')}</strong></div>
-          <div className="summary-row summary-total"><span>{copy(lang, 'Total', 'کل')}</span><strong>{copy(lang, 'To be confirmed', 'تصدیق باقی ہے')}</strong></div>
-        </div>
-        <p className="muted">{copy(lang, 'No COD or delivery method is active in this preview.', 'اس پیش منظر میں کیش آن ڈیلیوری یا ڈیلیوری کا کوئی طریقہ فعال نہیں۔')}</p>
-      </aside>
-    </div></section>
-  </main>;
+  const {cart,change,remove}=useStore(); const quantity=cart.reduce((sum,line)=>sum+line.quantity,0); const total=getTotal(cart);
+  return <main id="main-content" data-testid="page-checkout"><section className="order-hero"><div className="container-wide"><span className="eyebrow"><Bi en="Order enquiry" ur="آرڈر کی تفصیل"/></span><h1><Bi en="Review your bag." ur="اپنا بیگ دیکھیں۔"/></h1><p><Bi en="No address or personal details are needed here. Your WhatsApp draft is yours to review and send." ur="یہاں پتے یا ذاتی معلومات کی ضرورت نہیں۔ واٹس ایپ کا مسودہ آپ دیکھ کر خود بھیجیں گے۔"/></p></div></section><section className="container-wide order-layout"><div className="order-items"><div className="order-section-head"><span className="eyebrow"><Bi en="Your selection" ur="آپ کا انتخاب"/></span><span className="item-count"><Bi en={`${quantity} ${quantity===1?'item':'items'}`} ur={`${quantity} اشیاء`}/></span></div>{cart.length?cart.map(line=><div className="order-line" key={line.slug} data-testid={`row-order-${line.slug}`}><img src={asset(product.photo)} alt="Original Al-Mizan pack"/><div className="order-line-info"><h2><Bi en={product.name} ur={product.ur}/></h2><p><Bi en={`200 g · ${money(product.price)} each`} ur={`۲۰۰ گرام · فی عدد ۲,۵۰۰ پاکستانی روپے`}/></p><button onClick={()=>remove(line.slug)} className="remove-link" data-testid={`button-remove-${line.slug}`}><Trash2 size={13}/><Bi en="Remove" ur="ہٹائیں"/></button></div><div className="order-line-end"><strong>{money(line.quantity*product.price)}</strong><div className="quantity-controls"><button onClick={()=>change(line.slug,-1)} aria-label="Decrease quantity — تعداد کم کریں" data-testid={`button-decrease-${line.slug}`}><Minus size={13}/></button><span data-testid={`text-quantity-${line.slug}`}>{line.quantity}</span><button onClick={()=>change(line.slug,1)} aria-label="Increase quantity — تعداد بڑھائیں" data-testid={`button-increase-${line.slug}`}><Plus size={13}/></button></div></div></div>):<div className="empty-cart order-empty" data-testid="empty-cart"><ShoppingBag size={27}/><h2><Bi en="Your bag is empty." ur="آپ کا بیگ خالی ہے۔"/></h2><p><Bi en="Start with the one product in our collection." ur="ہمارے مجموعے کی واحد مصنوعات سے آغاز کریں۔"/></p><Link href="/products" className="button-outline" data-testid="link-empty-products"><Bi en="Explore Al-Mizan" ur="المیزان دیکھیں"/> <ArrowRight size={15}/></Link></div>}
+    </div><aside className="order-summary"><span className="eyebrow"><Bi en="A clear total" ur="واضح مجموعہ"/></span><h2><Bi en="Order summary" ur="آرڈر کا خلاصہ"/></h2><div className="summary-metric"><span><Bi en="Items" ur="اشیاء"/></span><strong>{quantity}</strong></div><div className="summary-metric"><span><Bi en="Product subtotal" ur="مصنوعات کا ذیلی کل"/></span><strong data-testid="text-order-subtotal">{money(total)}</strong></div><div className="summary-total"><span><Bi en="Listed total" ur="درج شدہ کل"/></span><strong data-testid="text-order-total">{money(total)}</strong></div><p className="summary-disclaimer"><Bi en="This is a price total for the listed product only. No delivery charge or policy is specified." ur="یہ صرف درج شدہ مصنوعات کی قیمت کا مجموعہ ہے۔ ڈیلیوری چارج یا پالیسی درج نہیں۔"/></p><a className={`button-primary whatsapp-button ${cart.length?'':'is-disabled'}`} href={cart.length?`https://wa.me/${waNumber}?text=${orderMessage(cart)}`:undefined} target="_blank" rel="noreferrer" aria-disabled={!cart.length} onClick={event=>{if(!cart.length)event.preventDefault();}} data-testid="button-whatsapp-order"><Bi en="Review draft in WhatsApp" ur="واٹس ایپ میں مسودہ دیکھیں"/> <ArrowUpRight size={16}/></a><p className="handoff-note"><Bi en="WhatsApp opens with a draft. Review and send it yourself. No order is placed or stored until you send." ur="واٹس ایپ میں مسودہ کھلے گا۔ اسے دیکھ کر خود بھیجیں۔ بھیجنے سے پہلے کوئی آرڈر نہیں بنتا یا محفوظ ہوتا۔"/></p></aside></section></main>;
 }
-
-function Field({ lang, label, ur, name, value, onChange, required, type = 'text' }: { lang: Lang; label: string; ur: string; name: string; value: string; onChange: (value: string) => void; required?: boolean; type?: string }) {
-  return <div className="field"><label htmlFor={`checkout-${name}`}>{copy(lang, label, ur)}{required && <span aria-hidden="true"> *</span>}</label><input id={`checkout-${name}`} type={type} value={value} onChange={(e) => onChange(e.target.value)} required={required} autoComplete={name === 'name' ? 'name' : name === 'phone' ? 'tel' : 'address-level2'} data-testid={`input-checkout-${name}`} /></div>;
+function CartDrawer({close}:{close:()=>void}) {
+  const {cart,change,remove}=useStore(); const total=getTotal(cart);
+  useEffect(()=>{const onKey=(event:KeyboardEvent)=>{if(event.key==='Escape')close();};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey);},[close]);
+  return <div className="modal-scrim" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)close();}}><section className="bag-drawer" role="dialog" aria-modal="true" aria-labelledby="bag-title" data-testid="panel-cart"><div className="drawer-head"><div><span className="eyebrow"><Bi en="Your selection" ur="آپ کا انتخاب"/></span><h2 id="bag-title"><Bi en="The bag" ur="بیگ"/></h2></div><button className="close-button" onClick={close} autoFocus aria-label="Close bag — بیگ بند کریں" data-testid="button-close-cart"><X size={19}/></button></div><p className="drawer-sub"><Bi en="Saved in this browser. Nothing is ordered yet." ur="اسی براؤزر میں محفوظ ہے۔ ابھی کوئی آرڈر نہیں ہوا۔"/></p>{cart.length?cart.map(line=><div className="drawer-item" key={line.slug}><img src={asset(product.photo)} alt="Al-Mizan original pack"/><div className="drawer-item-copy"><h3><Bi en={product.name} ur={product.ur}/></h3><p><Bi en={`200 g · ${money(product.price)}`} ur={`۲۰۰ گرام · ۲,۵۰۰ پاکستانی روپے`}/></p><button className="remove-link" onClick={()=>remove(line.slug)} data-testid={`drawer-remove-${line.slug}`}><Trash2 size={13}/><Bi en="Remove" ur="ہٹائیں"/></button></div><div className="drawer-controls"><strong>{money(line.quantity*product.price)}</strong><div className="quantity-controls"><button onClick={()=>change(line.slug,-1)} aria-label="Decrease quantity — تعداد کم کریں" data-testid={`drawer-decrease-${line.slug}`}><Minus size={12}/></button><span>{line.quantity}</span><button onClick={()=>change(line.slug,1)} aria-label="Increase quantity — تعداد بڑھائیں" data-testid={`drawer-increase-${line.slug}`}><Plus size={12}/></button></div></div></div>):<div className="empty-cart drawer-empty"><ShoppingBag size={28}/><h3><Bi en="A little space, for now." ur="فی الحال بیگ خالی ہے۔"/></h3><p><Bi en="Explore the product and add it when you are ready." ur="مصنوعات دیکھیں اور تیار ہونے پر بیگ میں شامل کریں۔"/></p><Link href="/products" className="button-outline" onClick={close} data-testid="link-drawer-products"><Bi en="Explore product" ur="مصنوعات دیکھیں"/></Link></div>}<div className="drawer-bottom"><div className="drawer-total"><span><Bi en="Listed total" ur="درج شدہ کل"/></span><strong>{money(total)}</strong></div><p><Bi en="Delivery charges and policies are not specified." ur="ڈیلیوری چارجز اور پالیسیاں درج نہیں ہیں۔"/></p><Link href="/checkout" onClick={close} className={`button-primary drawer-continue ${cart.length?'':'is-disabled'}`} data-testid="link-drawer-checkout"><Bi en="Review order enquiry" ur="آرڈر کی تفصیل دیکھیں"/> <ArrowRight size={16}/></Link></div></section></div>;
 }
-
-function CartDrawer({ close }: { close: () => void }) {
-  const { lang, cart, change, remove } = useStore();
-  useEffect(() => {
-    const handleKey = (event: KeyboardEvent) => { if (event.key === 'Escape') close(); };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [close]);
-  return <div className="cart-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) close(); }}>
-    <section className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-heading" data-testid="panel-cart">
-      <div className="cart-drawer-head"><div><span className="eyebrow">{copy(lang, 'Local demo', 'مقامی ڈیمو')}</span><h2 id="cart-heading">{copy(lang, 'Your bag', 'آپ کا بیگ')}</h2></div><button autoFocus className="icon-button" onClick={close} aria-label={copy(lang, 'Close bag', 'بیگ بند کریں')} data-testid="button-close-cart"><X size={17} /></button></div>
-      <p className="muted">{copy(lang, 'Saved only in this browser as a local preview.', 'صرف اس براؤزر میں مقامی پیش منظر کے طور پر محفوظ ہے۔')}</p>
-      {cart.length ? cart.map((line) => {
-        const item = products.find((product) => product.slug === line.slug);
-        if (!item) return null;
-        return <div className="cart-row" key={line.slug}><div><h4>{productCopy(item, lang)}</h4><p>{copy(lang, 'Sample · price to be confirmed', 'نمونہ · قیمت کی تصدیق باقی ہے')}</p><button className="button-quiet" style={{ padding: 0, minHeight: 26 }} onClick={() => remove(line.slug)} data-testid={`drawer-remove-${line.slug}`}><Trash2 size={12} />{copy(lang, 'Remove', 'ہٹائیں')}</button></div><div className="quantity-controls"><button onClick={() => change(line.slug, -1)} aria-label={copy(lang, 'Decrease quantity', 'تعداد کم کریں')} data-testid={`drawer-decrease-${line.slug}`}><Minus size={12} /></button><span>{line.quantity}</span><button onClick={() => change(line.slug, 1)} aria-label={copy(lang, 'Increase quantity', 'تعداد بڑھائیں')} data-testid={`drawer-increase-${line.slug}`}><Plus size={12} /></button></div></div>;
-      }) : <div className="empty-cart"><ShoppingBag size={26} /><h3>{copy(lang, 'A little room for something', 'کچھ شامل کرنے کی جگہ')}</h3><p>{copy(lang, 'Your local demo bag is empty.', 'آپ کا مقامی ڈیمو بیگ خالی ہے۔')}</p><Link href="/products" onClick={close} className="button-outline">{copy(lang, 'Browse samples', 'نمونے دیکھیں')}</Link></div>}
-      <div className="cart-drawer-bottom"><p>{copy(lang, 'Prices are not confirmed; nothing here can be purchased.', 'قیمتوں کی تصدیق نہیں ہوئی؛ یہاں سے کچھ خریدا نہیں جا سکتا۔')}</p><Link href="/checkout" onClick={close} className="button-primary">{copy(lang, 'Go to preview checkout', 'چیک آؤٹ پیش منظر پر جائیں')} <ArrowRight size={15} /></Link></div>
-    </section>
-  </div>;
+function ImagePreview({src,close}:{src:string;close:()=>void}) {
+  useEffect(()=>{const onKey=(event:KeyboardEvent)=>{if(event.key==='Escape')close();};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey);},[close]);
+  return <div className="image-modal" role="presentation" onMouseDown={event=>{if(event.currentTarget===event.target)close();}}><section role="dialog" aria-modal="true" aria-label="Original product image — اصل مصنوعات کی تصویر" className="image-modal-box"><button className="close-button image-close" onClick={close} autoFocus aria-label="Close image — تصویر بند کریں" data-testid="button-close-image"><X size={19}/></button><img src={src} alt="Original Al-Mizan package, front and back"/><p><Bi en="Original pack photography supplied by the shop." ur="دکان کی فراہم کردہ اصل پیکنگ کی تصویر۔"/></p></section></div>;
 }
-
 function Footer() {
-  const { lang } = useStore();
-  return <footer className="footer"><div className="container-wide">
-    <div className="footer-main">
-      <div><Link href="/" className="brand-mark"><span className="brand-symbol"><Sprout size={20} /></span><span><span className="brand-name">Tib-E-Nabwi</span><span className="brand-subtitle">{copy(lang, 'Botanical goods', 'نباتاتی اشیاء')}</span></span></Link><p>{copy(lang, 'A contemporary neighborhood herbal shop, currently presented as a sample storefront.', 'ایک جدید محلے کی جڑی بوٹیوں کی دکان، فی الحال نمائشی اسٹور کی صورت میں۔')}</p></div>
-      <div><h4>{copy(lang, 'Find your way', 'اپنی منزل منتخب کریں')}</h4><div className="footer-links"><Link href="/" data-testid="link-footer-home">{copy(lang, 'Home', 'صفحۂ اول')}</Link><Link href="/products" data-testid="link-footer-products">{copy(lang, 'Sample catalogue', 'نمائشی کیٹلاگ')}</Link><Link href="/checkout" data-testid="link-footer-checkout">{copy(lang, 'Checkout preview', 'چیک آؤٹ کا پیش منظر')}</Link></div></div>
-      <div><h4>{copy(lang, 'A note from the shop', 'دکان کی جانب سے ایک نوٹ')}</h4><p>{copy(lang, 'WhatsApp contact', 'واٹس ایپ رابطہ')}: <bdi>{STORE_CONFIG.whatsappNumber}</bdi><br />{copy(lang, 'The number is a placeholder; this preview does not contact anyone.', 'یہ نمبر عارضی ہے؛ یہ پیش منظر کسی سے رابطہ نہیں کرتا۔')}</p></div>
-    </div>
-    <div className="footer-bottom"><span>{copy(lang, '© Tib-E-Nabwi · storefront preview', '© طبِ نبوی · اسٹور فرنٹ پیش منظر')}</span><span>{copy(lang, 'Illustrative products · no live orders', 'نمائشی مصنوعات · کوئی حقیقی آرڈر نہیں')}</span></div>
-  </div></footer>;
+  return <footer className="footer"><div className="container-wide footer-main"><div><Brand footer/><p><Bi en="A clear, bilingual introduction to Al-Mizan from Tib-E-Nabwi." ur="طبِ نبوی کی جانب سے المیزان کا واضح، دو لسانی تعارف۔"/></p></div><div className="footer-nav"><span className="eyebrow"><Bi en="Explore" ur="دیکھیں"/></span><Link href="/products" data-testid="link-footer-products"><Bi en="The product" ur="مصنوعات"/></Link><Link href="/checkout" data-testid="link-footer-checkout"><Bi en="Order enquiry" ur="آرڈر کی تفصیل"/></Link></div><div className="footer-contact"><span className="eyebrow"><Bi en="WhatsApp contact" ur="واٹس ایپ رابطہ"/></span><a href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer"><bdi>{number}</bdi> <ArrowUpRight size={14}/></a><p><Bi en="An enquiry draft opens for you to review and send." ur="دریافت کا مسودہ کھلے گا، جسے آپ دیکھ کر خود بھیجیں گے۔"/></p></div></div><div className="container-wide footer-bottom"><span><Bi en="© Tib-E-Nabwi" ur="© طبِ نبوی"/></span><span><Bi en="Clear details, no inflated claims." ur="واضح معلومات، بغیر مبالغہ آمیز دعووں کے۔"/></span></div></footer>;
 }
-
 function MissingPage() {
-  const { lang } = useStore();
-  return <main id="main-content" className="not-found"><div><span className="eyebrow" style={{ justifyContent: 'center' }}>{copy(lang, 'Not on this shelf', 'اس شیلف پر نہیں')}</span><h1 className="serif" style={{ fontSize: 48, color: '#214636' }}>{copy(lang, 'This page is not here.', 'یہ صفحہ یہاں موجود نہیں۔')}</h1><Link href="/" className="button-primary">{copy(lang, 'Return home', 'صفحۂ اول پر واپس جائیں')} <ArrowRight size={14} /></Link></div></main>;
+  return <main className="not-found" id="main-content" data-testid="page-not-found"><span className="eyebrow"><Bi en="A small detour" ur="ایک چھوٹا سا موڑ"/></span><h1><Bi en="This page isn't on the shelf." ur="یہ صفحہ شیلف پر موجود نہیں۔"/></h1><Link href="/" className="button-primary" data-testid="link-not-found-home"><Bi en="Return to the beginning" ur="صفحۂ اول پر واپس جائیں"/> <ArrowRight size={15}/></Link></main>;
 }
-
-function RoutedErrorBoundary({ children }: { children: ReactNode }) {
-  const [location] = useLocation();
+function RoutedErrorBoundary({children}:{children:ReactNode}) {
+  const [location]=useLocation();
   return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>;
 }
-
 export default function StoreApp() {
-  return <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><App /></WouterRouter>;
+  return <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/,'')}><App/></WouterRouter>;
 }
