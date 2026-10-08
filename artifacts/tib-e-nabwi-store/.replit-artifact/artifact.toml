@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Tib-E-Nabwi Herbal Store"
+description = "A bilingual English and Urdu storefront for Tib-E-Nabwi herbal wellness products, designed for Pakistani customers with clear product details, WhatsApp ordering, and Shopify-hosted checkout when connected."
+version = "1.0.0"
+id = "artifacts/tib-e-nabwi-store"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23283
+
+[services.development]
+run = "pnpm --filter @workspace/tib-e-nabwi-store run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/tib-e-nabwi-store", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/tib-e-nabwi-store/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23283"
+BASE_PATH = "/"
