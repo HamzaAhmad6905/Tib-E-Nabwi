@@ -1,0 +1,1 @@
+- [Store brand and location](store-brand-location.md) — Tib-E-Nabwi is the store; Al-Mizan is its first product, and the storefront should omit location.
