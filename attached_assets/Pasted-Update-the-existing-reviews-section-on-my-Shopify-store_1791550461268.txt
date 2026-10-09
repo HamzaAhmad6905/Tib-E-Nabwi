@@ -1,0 +1,59 @@
+Update the existing reviews section on my Shopify store.
+
+Brand: Tib-E-Nabwi Dawakhana.store
+Product: Al-Mizan Herbal Slim Detox Powder, 200g
+Theme: Shopify Dawn or a Dawn-based theme.
+
+CURRENT PROBLEM:
+The reviews section displays “No Verified Reviews” because I have not collected any genuine customer reviews yet.
+
+GOAL:
+Create an attractive, populated review-section preview so I can finish designing and testing my store before launch.
+
+1. KEEP THE EXISTING SECTION
+Inspect the current implementation and modify it instead of rebuilding the entire theme.
+
+2. ADD SAMPLE REVIEW PREVIEW MODE
+Create 12 fictional sample review cards using familiar Pakistani names such as Ali, Ahmad, Usman, Hassan, Bilal, Ayesha, Fatima, Sana, Hamza, Zain, and Maryam.
+
+Include a natural mix of Urdu, Roman Urdu, and English review text.
+
+Use varied 4.5-star and 5-star visual examples. Make the cards look natural and visually distinct without claiming the reviews are authentic.
+
+Display a visible label at the top of the section:
+“DEMO REVIEWS — FICTIONAL SAMPLE CONTENT”
+
+3. KEEP DEMO AND LIVE DATA SEPARATE
+- Demo reviews must be enabled only in development or theme-preview mode.
+- Do not include demo reviews in live rating calculations.
+- Do not create fake verified-purchase badges.
+- Do not describe fictional people as actual customers.
+- Do not display demo reviews as genuine testimonials on the published storefront.
+- When demo mode is disabled and there are no real reviews, show a clean empty state.
+
+4. DESIGN
+- Emerald-green, antique-gold, and warm-cream colors.
+- Clean cards with readable typography.
+- Correct right-to-left support for Urdu.
+- Responsive desktop and mobile layouts.
+- Accessible star icons.
+- Consistent spacing with the existing Shopify theme.
+
+5. REVIEW CARD FIELDS
+Each sample card should support:
+- Sample reviewer name
+- Sample rating
+- Sample review text
+- Optional sample date
+- Language direction
+- A clear sample-content indicator
+
+6. IMPLEMENTATION
+- Use Shopify Liquid and the existing theme architecture.
+- Add configurable section settings for preview mode.
+- Ensure the Liquid schema is valid.
+- Do not replace Shopify's native cart or checkout.
+- Explain exactly how to preview the sample cards in Shopify.
+- Confirm that disabling demo mode removes all fictional reviews from the live storefront.
+
+First inspect the existing section, identify why it currently shows “No Verified Reviews”, and then implement and test the preview mode.
