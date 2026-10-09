@@ -37,25 +37,36 @@
 
     {%- if is_sample_preview -%}
       <p class="tn-reviews__sample-warning" role="note">
-        SAMPLE REVIEW — FICTIONAL CONTENT
-        <span lang="ur" dir="rtl">یہ صرف تھیم ایڈیٹر کا خیالی نمونہ ہے؛ حقیقی صارفین کے جائزے نہیں۔</span>
+        DEMO REVIEWS — FICTIONAL SAMPLE CONTENT
+        <span lang="ur" dir="rtl">یہ فرضی نمونے ہیں، حقیقی صارفین کے جائزے نہیں۔</span>
       </p>
-      {%- assign sample_reviews = "Ali~ur~5~پروڈکٹ کی معلومات واضح ہیں اور پیکنگ اچھی لگتی ہے۔|Ahmad~en~4~The product information is easy to understand, and the packaging looks neat.|Muhammad Usman~ur-Latn~5~Product ki details clear hon aur delivery ki information asani se mil jaye.|Hassan~en~4~I appreciate having the ingredients and usage instructions clearly listed.|Bilal~ur-Latn~5~Ingredients aur istemal ki hidayat parhna mere liye zaroori hai.|Ayesha~ur~4~اجزاء اور استعمال کا طریقہ آسان اردو میں دیا جائے تو بہتر ہے۔|Fatima~en~5~Clear product details make it easier to ask questions before ordering.|Sana~ur-Latn~4~Product ki maloomat aur qeemat aik jagah par dekhna asaan hai.|Muhammad Hamza~ur~5~قیمت اور وزن کی معلومات ایک جگہ واضح طور پر لکھی ہیں۔|Zain~en~4~The bilingual details are helpful when comparing the product information.|Maryam~ur-Latn~5~Urdu aur English dono mein tafseel parhna asaan lagta hai.|Usman~ur~4~ڈیلیوری کی تفصیل آرڈر سے پہلے معلوم ہونا ضروری ہے۔" | split: "|" -%}
+      {%- assign sample_reviews = "Ali~ur~5~مصنوعات کی معلومات واضح ہیں اور پیکنگ اچھی لگتی ہے۔~2026-09-28|Ahmad~en~4.5~The ingredient and order details are easy to find.~2026-09-23|Usman~ur-Latn~5~Ingredients aur order ki details saaf aur samajhne mein asaan hain.~2026-09-18|Hassan~en~4.5~I like that the product details and cautions are easy to read.|Bilal~ur-Latn~5~Product ki maloomat aur qeemat aik jagah par nazar aati hai.~2026-09-12|Ayesha~ur~4.5~اجزاء اور استعمال کی ہدایات واضح لکھنا مفید ہے۔~2026-09-08|Fatima~en~5~The clear bilingual information is easy to follow.~2026-09-04|Sana~ur-Latn~4.5~Urdu aur English mein tafseel parhna asaan hai.|Hamza~ur~5~پروڈکٹ کا وزن اور قیمت واضح طور پر درج ہیں۔~2026-08-29|Zain~en~4.5~The bilingual details make it easy to understand what is listed.|Maryam~ur-Latn~5~Puri maloomat aik jagah dekhna asaan hai.~2026-08-22|Hira~en~4.5~Delivery information should be clear before placing an order.~2026-08-16" | split: "|" -%}
       <div class="tn-reviews__grid">
         {%- for review in sample_reviews -%}
           {%- assign fields = review | split: "~" -%}
           {%- assign sample_rating = fields[2] | plus: 0 -%}
-          {%- assign sample_direction = "auto" -%}
+          {%- assign sample_full_stars = sample_rating | floor -%}
+          {%- assign sample_next_star = sample_full_stars | plus: 1 -%}
+          {%- assign sample_star_fraction = sample_rating | minus: sample_full_stars -%}
+          {%- assign sample_direction = "ltr" -%}
           {%- if fields[1] == "ur" -%}{%- assign sample_direction = "rtl" -%}{%- endif -%}
           <article class="tn-review">
             <div class="tn-review__stars" role="img" aria-label="{{ sample_rating }} out of 5 stars">
               {%- for star in (1..5) -%}
-                <span aria-hidden="true">{%- if star <= sample_rating -%}★{%- else -%}☆{%- endif -%}</span>
+                <span class="tn-review__star {% if star <= sample_full_stars %}is-full{% elsif star == sample_next_star and sample_star_fraction >= 0.5 %}is-half{% else %}is-empty{% endif %}" aria-hidden="true">★</span>
               {%- endfor -%}
             </div>
             <blockquote lang="{{ fields[1] }}" dir="{{ sample_direction }}">{{ fields[3] | escape }}</blockquote>
-            <p class="tn-review__author">{{ fields[0] | escape }}</p>
-            <span class="tn-review__sample-label">Sample only · Fictional reviewer</span>
+            <div class="tn-review__byline">
+              <p class="tn-review__author">{{ fields[0] | escape }}</p>
+              {%- if fields[4] != blank -%}
+                <time datetime="{{ fields[4] | escape }}">{{ fields[4] | date: "%d %b %Y" }}</time>
+              {%- endif -%}
+            </div>
+            <p class="tn-review__sample-label">
+              <span>Sample only · Fictional reviewer</span>
+              <span lang="ur" dir="rtl">صرف نمونہ · فرضی جائزہ</span>
+            </p>
           </article>
         {%- endfor -%}
       </div>
@@ -67,7 +78,7 @@
           <article class="tn-review" {{ block.shopify_attributes }}>
             <div class="tn-review__stars" role="img" aria-label="{{ block.settings.rating }} out of 5 stars">
               {%- for star in (1..5) -%}
-                <span aria-hidden="true">{%- if star <= block.settings.rating -%}★{%- else -%}☆{%- endif -%}</span>
+                <span class="tn-review__star {% if star <= block.settings.rating %}is-full{% else %}is-empty{% endif %}" aria-hidden="true">★</span>
               {%- endfor -%}
             </div>
             <blockquote lang="{{ block.settings.language }}" dir="{{ review_direction }}">{{ block.settings.review | escape | newline_to_br }}</blockquote>
@@ -83,7 +94,7 @@
     {%- else -%}
       <p class="tn-reviews__empty">
         {{ section.settings.empty_message | escape }}
-        <span lang="ur" dir="rtl">ابھی کوئی تصدیق شدہ جائزہ نہیں۔ اپنی رائے دینے والے پہلے فرد بنیں۔</span>
+        <span lang="ur" dir="rtl">ابھی کوئی صارفانہ جائزہ موجود نہیں۔ اپنی رائے دینے والے پہلے فرد بنیں۔</span>
       </p>
     {%- endif -%}
   </div>
@@ -111,14 +122,14 @@
       "type": "text",
       "id": "empty_message",
       "label": "Message shown when there are no reviews",
-      "default": "Be the first to share your experience."
+      "default": "No customer reviews yet. Be the first to share your experience."
     },
     {
       "type": "checkbox",
       "id": "show_sample_preview",
       "label": "Show fictional sample reviews in the theme editor only",
-      "default": false,
-      "info": "Sample content is restricted to Shopify's theme editor preview and is never rendered to storefront visitors."
+      "default": true,
+      "info": "Fictional cards appear in the Shopify theme editor only, and only when no genuine review blocks exist. Storefront visitors never see demo content."
     }
   ],
   "blocks": [
