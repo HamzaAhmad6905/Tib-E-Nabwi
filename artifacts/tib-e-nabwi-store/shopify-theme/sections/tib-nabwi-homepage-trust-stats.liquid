@@ -1,0 +1,160 @@
+{{ 'tib-nabwi-homepage-trust-stats.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign visible_live_stats = 0
+  for block in section.blocks
+    assign clean_label = block.settings.label | strip
+    assign clean_value = block.settings.value | strip
+    assign clean_source = block.settings.source | strip
+    if block.settings.verified_for_live and clean_label != blank and clean_value != blank and clean_source != blank
+      assign visible_live_stats = visible_live_stats | plus: 1
+    endif
+  endfor
+  assign is_sample_preview = false
+  if section.settings.show_sample_preview and request.design_mode and visible_live_stats == 0
+    assign is_sample_preview = true
+  endif
+-%}
+
+<section class="tn-stats" aria-labelledby="tn-stats-title-{{ section.id }}">
+  <div class="tn-stats__inner page-width">
+    <header class="tn-stats__header">
+      <p class="tn-stats__eyebrow">Tib-E-Nabwi Dawakhana.store</p>
+      <h2 class="tn-stats__title" id="tn-stats-title-{{ section.id }}">
+        {{ section.settings.heading | escape }}
+        <span lang="ur" dir="rtl">ہماری دکان کے اعداد و شمار</span>
+      </h2>
+      {%- if is_sample_preview -%}
+        <p class="tn-stats__sample-warning" role="note">
+          SAMPLE DATA — PREVIEW ONLY
+          <span lang="ur" dir="rtl">یہ صرف تھیم ایڈیٹر کے لیے فرضی نمونے ہیں؛ حقیقی کاروباری اعداد نہیں۔</span>
+        </p>
+      {%- endif -%}
+    </header>
+
+    {%- if is_sample_preview -%}
+      <div class="tn-stats__grid">
+        <article class="tn-stat">
+          <strong dir="auto">50,000+</strong>
+          <span dir="auto">Total orders</span>
+          <span lang="ur" dir="rtl">کل آرڈرز</span>
+        </article>
+        <article class="tn-stat">
+          <strong dir="auto">10,000+</strong>
+          <span dir="auto">Returning customers</span>
+          <span lang="ur" dir="rtl">دوبارہ خریدنے والے صارفین</span>
+        </article>
+        <article class="tn-stat">
+          <strong dir="auto">4.8/5</strong>
+          <span dir="auto">Average customer rating</span>
+          <span lang="ur" dir="rtl">اوسط صارف درجہ بندی</span>
+        </article>
+        <article class="tn-stat">
+          <strong dir="auto">95%</strong>
+          <span dir="auto">Customer satisfaction</span>
+          <span lang="ur" dir="rtl">صارفین کا اطمینان</span>
+        </article>
+      </div>
+    {%- elsif visible_live_stats > 0 -%}
+      <div class="tn-stats__grid">
+        {%- for block in section.blocks -%}
+          {%- assign clean_label = block.settings.label | strip -%}
+          {%- assign clean_value = block.settings.value | strip -%}
+          {%- assign clean_source = block.settings.source | strip -%}
+          {%- if block.settings.verified_for_live and clean_label != blank and clean_value != blank and clean_source != blank -%}
+            <article class="tn-stat" {{ block.shopify_attributes }}>
+              <strong dir="auto">{{ clean_value | escape }}</strong>
+              <span dir="auto">{{ clean_label | escape }}</span>
+              <small>{{ section.settings.source_label | escape }} <span dir="auto">{{ clean_source | escape }}</span></small>
+            </article>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <p class="tn-stats__empty">
+        {{ section.settings.empty_message | escape }}
+        <span lang="ur" dir="rtl">مصدقہ اعداد و شمار دستیاب ہونے پر یہاں دکھائے جائیں گے۔</span>
+      </p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Tib-E-Nabwi stats",
+  "tag": "section",
+  "class": "section-tib-nabwi-trust-stats",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "Clear facts, shared with care"
+    },
+    {
+      "type": "text",
+      "id": "source_label",
+      "label": "Source label",
+      "default": "Source:"
+    },
+    {
+      "type": "text",
+      "id": "empty_message",
+      "label": "Message when no verified statistics are enabled",
+      "default": "Verified store figures will be shared when available."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sample_preview",
+      "label": "Show sample statistics in the theme editor only",
+      "default": false,
+      "info": "Illustrative numbers appear only in Shopify's theme editor preview; they are never shown to storefront visitors."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "statistic",
+      "name": "Verified statistic",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Statistic label",
+          "default": "Total orders"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Value",
+          "info": "Enter a real value taken from the documented source below."
+        },
+        {
+          "type": "text",
+          "id": "source",
+          "label": "Source or method",
+          "info": "Name the Shopify report, genuine review data, or documented survey method used to calculate this value."
+        },
+        {
+          "type": "checkbox",
+          "id": "verified_for_live",
+          "label": "This live value has a documented, verifiable source",
+          "default": false,
+          "info": "Only enable after checking the source and confirming the label accurately describes the metric."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Tib-E-Nabwi statistics",
+      "blocks": [
+        { "type": "statistic" },
+        { "type": "statistic" },
+        { "type": "statistic" },
+        { "type": "statistic" }
+      ]
+    }
+  ]
+}
+{% endschema %}

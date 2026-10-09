@@ -1,0 +1,133 @@
+Act as a senior Shopify theme developer and conversion-focused ecommerce designer.
+
+## PROJECT DETAILS
+
+Brand name: Tib-E-Nabwi Dawakhana.store
+Featured product: Al-Mizan Herbal Slim Detox Powder, 200g
+Target market: Pakistan
+Languages: Urdu, Roman Urdu, and English
+Brand aesthetic: Premium emerald green, antique gold, warm cream, and charcoal
+Theme: Shopify Dawn or another compatible Shopify Online Store 2.0 theme
+
+## OBJECTIVE
+
+Build two reusable Shopify theme sections:
+
+1. A customer reviews section that appears below the product details on every product page.
+2. A trust-statistics section for the homepage.
+
+Use Shopify Liquid, HTML, CSS, and minimal vanilla JavaScript where needed. This must be compatible with Shopify's native theme architecture, not just a React prototype.
+
+## FEATURE 1: PRODUCT CUSTOMER REVIEWS
+
+Create an elegant review section with:
+- Reviewer name
+- Star rating
+- Review text
+- Review date, when available
+- Optional verified-purchase indicator, only for genuinely verified purchases
+- Responsive review cards
+- Urdu, Roman Urdu, and English support
+- Correct right-to-left rendering for Urdu
+- Optional pagination or a mobile-friendly carousel
+- Average rating and total review count derived from authentic review data
+
+### Sample review content for development previews
+
+For design testing, provide approximately 12 sample reviews with familiar Pakistani names. Use a mix of male and female names, Urdu and Roman Urdu, and some English.
+
+Example fictional preview identities:
+- Ali
+- Ahmad
+- Muhammad Usman
+- Hassan
+- Bilal
+- Ayesha
+- Fatima
+- Sana
+- Muhammad Hamza
+- Zain
+- Maryam
+- Usman
+
+Use natural-sounding sample text such as:
+- Urdu: "پروڈکٹ کی معلومات واضح ہیں اور پیکنگ اچھی لگتی ہے۔"
+- Urdu: "اجزاء اور استعمال کا طریقہ آسان اردو میں دیا جائے تو بہتر ہے۔"
+- Roman Urdu: "Product ki details clear hon aur delivery ki information asani se mil jaye."
+- Roman Urdu: "Ingredients aur istemal ki hidayat parhna mere liye zaroori hai."
+- English: "The product information is easy to understand, and the packaging looks neat."
+- English: "I appreciate having the ingredients and usage instructions clearly listed."
+
+These are examples for layout testing only, not claims of actual product use.
+
+IMPORTANT:
+- Familiar Pakistani names are permitted as fictional sample identities in the development preview.
+- Clearly display a visible label: "SAMPLE REVIEW — FICTIONAL CONTENT".
+- Never publish fictional reviews as genuine customer testimonials.
+- Never mark a fictional reviewer as a verified buyer.
+- Do not show sample star ratings as the store's actual average rating.
+- Do not calculate live review statistics using sample content.
+- If no genuine reviews exist on the live storefront, show: "Be the first to share your experience."
+
+## FEATURE 2: HOMEPAGE TRUST STATISTICS
+
+Create a separate, editable Shopify homepage section with three or four attractive statistic cards.
+
+Suggested labels:
+- Total Orders
+- Returning Customers
+- Average Customer Rating
+- Customer Satisfaction
+
+For development previews, allow illustrative values such as:
+- 50,000+ Total Orders
+- 10,000+ Returning Customers
+- 4.8/5 Average Rating
+- 95% Customer Satisfaction
+
+All illustrative numbers must be labelled as sample data in the development preview and must not appear as factual business metrics on the live storefront.
+
+For live mode:
+- Use verified order records for order totals.
+- Use a documented method to count returning customers.
+- Calculate average ratings from genuine customer reviews.
+- Calculate satisfaction percentages only from documented survey results.
+- Never imply that a statistic has been independently verified when it has not.
+- Provide editable theme settings and a clear distinction between preview mode and live mode.
+
+## DESIGN REQUIREMENTS
+
+- Use emerald green, antique gold, warm cream, and charcoal.
+- Keep the design consistent with Tib-E-Nabwi Dawakhana.store.
+- Use clean typography, subtle borders, restrained shadows, and generous spacing.
+- Support Urdu and English without broken alignment.
+- Use responsive layouts for mobile, tablet, and desktop.
+- Make star ratings accessible to screen readers.
+- Respect reduced-motion preferences.
+- Avoid unnecessary external dependencies.
+
+## TECHNICAL REQUIREMENTS
+
+1. Inspect the existing project and identify whether it is a Shopify Liquid theme or a React prototype.
+2. Show the existing file structure before making changes.
+3. Create a reusable product-review section with a valid Shopify section schema and preset.
+4. Create a separate homepage-statistics section with a valid schema and preset.
+5. Scope CSS to each section to avoid changing unrelated theme components.
+6. Explain exactly where each file belongs in the Shopify theme.
+7. Explain how to add the reviews section to product templates and statistics to the homepage.
+8. Keep demo content isolated from live review calculations.
+9. Do not create fake verified-purchase labels, fabricated testimonials, or misleading health claims.
+10. Provide testing instructions for mobile and desktop.
+11. Explain how to connect a legitimate Shopify review app when authentic reviews become available.
+
+## DELIVERABLES
+
+- Complete Shopify Liquid section files
+- CSS and JavaScript assets, if needed
+- File tree and installation instructions
+- Theme editor configuration instructions
+- Development preview and live-mode behavior
+- Mobile testing checklist
+- Explanation of any manual Shopify admin steps
+
+Start by inspecting the current Replit project and reporting its framework and file structure. Then implement the sections in small, testable steps. Do not claim successful installation or testing unless it has actually been completed.

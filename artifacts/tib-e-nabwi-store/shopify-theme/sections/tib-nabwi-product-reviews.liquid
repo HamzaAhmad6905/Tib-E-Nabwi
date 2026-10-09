@@ -1,0 +1,177 @@
+{{ 'tib-nabwi-product-reviews.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign genuine_review_count = section.blocks.size
+  assign genuine_rating_total = 0
+  for block in section.blocks
+    assign genuine_rating_total = genuine_rating_total | plus: block.settings.rating
+  endfor
+  assign is_sample_preview = false
+  if section.settings.show_sample_preview and request.design_mode and genuine_review_count == 0
+    assign is_sample_preview = true
+  endif
+  if genuine_review_count > 0
+    assign genuine_rating_average = genuine_rating_total | times: 1.0 | divided_by: genuine_review_count | round: 1
+  endif
+-%}
+
+<section class="tn-reviews" aria-labelledby="tn-reviews-title-{{ section.id }}">
+  <div class="tn-reviews__inner page-width">
+    <header class="tn-reviews__header">
+      <div>
+        <p class="tn-reviews__eyebrow">Tib-E-Nabwi Dawakhana.store</p>
+        <h2 class="tn-reviews__title" id="tn-reviews-title-{{ section.id }}">
+          {{ section.settings.heading | escape }}
+          <span lang="ur" dir="rtl">صارفین کی رائے</span>
+        </h2>
+      </div>
+
+      {%- if genuine_review_count > 0 -%}
+        <div class="tn-reviews__summary" aria-label="{{ genuine_rating_average }} out of 5 stars from {{ genuine_review_count }} customer reviews">
+          <strong>{{ genuine_rating_average }} <span aria-hidden="true">★</span></strong>
+          <span>{{ genuine_review_count }} {{ section.settings.review_count_label | escape }}</span>
+          <span lang="ur" dir="rtl">{{ genuine_review_count }} جائزے · اوسط درجہ {{ genuine_rating_average }} از ۵</span>
+        </div>
+      {%- endif -%}
+    </header>
+
+    {%- if is_sample_preview -%}
+      <p class="tn-reviews__sample-warning" role="note">
+        SAMPLE REVIEW — FICTIONAL CONTENT
+        <span lang="ur" dir="rtl">یہ صرف تھیم ایڈیٹر کا خیالی نمونہ ہے؛ حقیقی صارفین کے جائزے نہیں۔</span>
+      </p>
+      {%- assign sample_reviews = "Ali~ur~5~پروڈکٹ کی معلومات واضح ہیں اور پیکنگ اچھی لگتی ہے۔|Ahmad~en~4~The product information is easy to understand, and the packaging looks neat.|Muhammad Usman~ur-Latn~5~Product ki details clear hon aur delivery ki information asani se mil jaye.|Hassan~en~4~I appreciate having the ingredients and usage instructions clearly listed.|Bilal~ur-Latn~5~Ingredients aur istemal ki hidayat parhna mere liye zaroori hai.|Ayesha~ur~4~اجزاء اور استعمال کا طریقہ آسان اردو میں دیا جائے تو بہتر ہے۔|Fatima~en~5~Clear product details make it easier to ask questions before ordering.|Sana~ur-Latn~4~Product ki maloomat aur qeemat aik jagah par dekhna asaan hai.|Muhammad Hamza~ur~5~قیمت اور وزن کی معلومات ایک جگہ واضح طور پر لکھی ہیں۔|Zain~en~4~The bilingual details are helpful when comparing the product information.|Maryam~ur-Latn~5~Urdu aur English dono mein tafseel parhna asaan lagta hai.|Usman~ur~4~ڈیلیوری کی تفصیل آرڈر سے پہلے معلوم ہونا ضروری ہے۔" | split: "|" -%}
+      <div class="tn-reviews__grid">
+        {%- for review in sample_reviews -%}
+          {%- assign fields = review | split: "~" -%}
+          {%- assign sample_rating = fields[2] | plus: 0 -%}
+          {%- assign sample_direction = "auto" -%}
+          {%- if fields[1] == "ur" -%}{%- assign sample_direction = "rtl" -%}{%- endif -%}
+          <article class="tn-review">
+            <div class="tn-review__stars" role="img" aria-label="{{ sample_rating }} out of 5 stars">
+              {%- for star in (1..5) -%}
+                <span aria-hidden="true">{%- if star <= sample_rating -%}★{%- else -%}☆{%- endif -%}</span>
+              {%- endfor -%}
+            </div>
+            <blockquote lang="{{ fields[1] }}" dir="{{ sample_direction }}">{{ fields[3] | escape }}</blockquote>
+            <p class="tn-review__author">{{ fields[0] | escape }}</p>
+            <span class="tn-review__sample-label">Sample only · Fictional reviewer</span>
+          </article>
+        {%- endfor -%}
+      </div>
+    {%- elsif genuine_review_count > 0 -%}
+      <div class="tn-reviews__grid">
+        {%- for block in section.blocks -%}
+          {%- assign review_direction = "auto" -%}
+          {%- if block.settings.language == "ur" -%}{%- assign review_direction = "rtl" -%}{%- endif -%}
+          <article class="tn-review" {{ block.shopify_attributes }}>
+            <div class="tn-review__stars" role="img" aria-label="{{ block.settings.rating }} out of 5 stars">
+              {%- for star in (1..5) -%}
+                <span aria-hidden="true">{%- if star <= block.settings.rating -%}★{%- else -%}☆{%- endif -%}</span>
+              {%- endfor -%}
+            </div>
+            <blockquote lang="{{ block.settings.language }}" dir="{{ review_direction }}">{{ block.settings.review | escape | newline_to_br }}</blockquote>
+            <div class="tn-review__byline">
+              <p class="tn-review__author">{{ block.settings.reviewer | escape }}</p>
+              {%- if block.settings.review_date != blank -%}
+                <time>{{ block.settings.review_date | escape }}</time>
+              {%- endif -%}
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <p class="tn-reviews__empty">
+        {{ section.settings.empty_message | escape }}
+        <span lang="ur" dir="rtl">ابھی کوئی تصدیق شدہ جائزہ نہیں۔ اپنی رائے دینے والے پہلے فرد بنیں۔</span>
+      </p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Tib-E-Nabwi reviews",
+  "tag": "section",
+  "class": "section-tib-nabwi-reviews",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "Customer reviews"
+    },
+    {
+      "type": "text",
+      "id": "review_count_label",
+      "label": "Review count label",
+      "default": "customer reviews"
+    },
+    {
+      "type": "text",
+      "id": "empty_message",
+      "label": "Message shown when there are no reviews",
+      "default": "Be the first to share your experience."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sample_preview",
+      "label": "Show fictional sample reviews in the theme editor only",
+      "default": false,
+      "info": "Sample content is restricted to Shopify's theme editor preview and is never rendered to storefront visitors."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Genuine customer review",
+      "settings": [
+        {
+          "type": "text",
+          "id": "reviewer",
+          "label": "Reviewer name",
+          "default": "Customer"
+        },
+        {
+          "type": "textarea",
+          "id": "review",
+          "label": "Review",
+          "default": "Add a review shared by a real customer, with their permission."
+        },
+        {
+          "type": "select",
+          "id": "language",
+          "label": "Review language",
+          "default": "en",
+          "options": [
+            { "value": "en", "label": "English" },
+            { "value": "ur", "label": "Urdu" },
+            { "value": "ur-Latn", "label": "Roman Urdu" }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "review_date",
+          "label": "Review date (optional)",
+          "info": "Use a truthful date, for example 9 October 2026."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 50,
+  "presets": [
+    {
+      "name": "Tib-E-Nabwi reviews"
+    }
+  ]
+}
+{% endschema %}
