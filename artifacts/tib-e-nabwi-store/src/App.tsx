@@ -18,6 +18,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, Check, ClipboardList, Leaf, Langua
 import { Link, Route, Switch, useLocation, Router as WouterRouter, useRoute } from 'wouter';
 import './index.css';
 import { client } from "./shopifyClient";
+import { startCheckout } from './shopify';
 
 type Product = { slug: string; name: string; ur: string; price: number; grams: number; photo: string };
 type CartLine = { slug: string; quantity: number };
@@ -29,6 +30,13 @@ const ingredients = [
 ];
 const number = '+92 329 7976370';
 const waNumber = '923297976370';
+const shopDomain = import.meta.env.VITE_SHOPIFY_DOMAIN;
+const policyLinks = [
+  { path: 'refund-policy', en: 'Refund Policy', ur: 'ریفنڈ پالیسی' },
+  { path: 'shipping-policy', en: 'Shipping Policy', ur: 'شپنگ پالیسی' },
+  { path: 'privacy-policy', en: 'Privacy Policy', ur: 'پرائیویسی پالیسی' },
+  { path: 'terms-of-service', en: 'Terms of Service', ur: 'شرائطِ استعمال' },
+];
 const productImages = [
   { file: 'al-mizan-original.jpeg', altEn: 'Original Al-Mizan jar photographed from the front and back', altUr: 'المیزان کے اصل ڈبے کی سامنے اور پیچھے سے لی گئی تصویر', labelEn: 'Original pack', labelUr: 'اصل پیکنگ' },
   { file: 'al-mizan-ingredients.jpg', altEn: 'Decorative still life of powder and botanical ingredients', altUr: 'پاؤڈر اور نباتاتی اجزاء کی آرائشی تصویر', labelEn: 'Botanical still life', labelUr: 'نباتاتی آرائشی تصویر' },
@@ -79,13 +87,6 @@ function Brand({ footer = false }: { footer?: boolean }) {
   return <Link href="/" className={`brand ${footer ? 'brand-footer' : ''}`} aria-label="Tib-E-Nabwi, طبِ نبوی — home" data-testid="link-brand"><span className="brand-emblem"><Mark /></span><span className="brand-type"><strong>Tib-E-Nabwi</strong><span className="brand-tagline">Herbal goods</span><span lang="ur" dir="rtl" className="brand-tagline urdu">ہربل مصنوعات</span></span></Link>;
 }
 function App() {
-  // inside function App() { ... }
-useEffect(() => {
-  client
-    .request(`{ shop { name } products(first: 3) { edges { node { title } } } }`)
-    .then((res) => console.log("Shopify says:", res))
-    .catch((err) => console.error("Shopify error:", err));
-  }, []);
   const [location] = useLocation();
   const [cart, setCart] = useState<CartLine[]>(() => { try { return JSON.parse(localStorage.getItem('tn-cart') || '[]') as CartLine[]; } catch { return []; } });
   const [cartOpen, setCartOpen] = useState(false);
@@ -272,6 +273,18 @@ function Checkout() {
 }
 function CheckoutFlow() {
   const {cart,change,remove}=useStore();
+    const [busy, setBusy] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
+  const payOnline = async () => {
+    setBusy(true); setCheckoutError('');
+    try {
+      const quantity = cart.reduce((sum, line) => sum + line.quantity, 0);
+      await startCheckout(quantity);
+     } catch (e) {
+      setCheckoutError(e instanceof Error ? e.message : 'Something went wrong');
+      setBusy(false);
+     }
+    };
   const form=useForm<CheckoutFormValues>({
     resolver:zodResolver(checkoutSchema),
     defaultValues:{name:'',phone:'',city:'',address:'',note:''},
@@ -312,6 +325,10 @@ function CheckoutFlow() {
       <aside className="checkout-summary"><span className="eyebrow"><Bi en="Your selection" ur="آپ کا انتخاب"/></span><h2><Bi en="Items & quantity" ur="مصنوعات اور تعداد"/></h2>
         {cart.length?cart.map(line=><div className="checkout-summary-line" key={line.slug} data-testid={`summary-item-${line.slug}`}><img src={asset(product.photo)} alt="Al-Mizan product package"/><div className="checkout-summary-copy"><strong><Bi en={product.name} ur={product.ur}/></strong><span><Bi en={`${money(product.price)} each`} ur={`فی عدد ${moneyUr(product.price)}`}/></span><div className="quantity-controls"><button type="button" onClick={()=>change(line.slug,-1)} aria-label="Decrease quantity — تعداد کم کریں" data-testid={`checkout-decrease-${line.slug}`}><Minus size={13}/></button><span>{line.quantity}</span><button type="button" onClick={()=>change(line.slug,1)} aria-label="Increase quantity — تعداد بڑھائیں" data-testid={`checkout-increase-${line.slug}`}><Plus size={13}/></button><button type="button" className="remove-link" onClick={()=>remove(line.slug)} data-testid={`checkout-remove-${line.slug}`}><Trash2 size={13}/><Bi en="Remove" ur="ہٹائیں"/></button></div></div><b>{money(line.quantity*product.price)}</b></div>):<div className="checkout-no-items"><p><Bi en="Your bag is empty." ur="آپ کا بیگ خالی ہے۔"/></p><Link href="/products" className="button-outline" data-testid="link-checkout-products"><Bi en="Explore products" ur="مصنوعات دیکھیں"/></Link></div>}
         <div className="checkout-total"><span><Bi en="Listed product total" ur="مصنوعات کی درج شدہ کل قیمت"/></span><strong data-testid="text-order-total">{money(getTotal(cart))}</strong></div>
+                <button type="button" className="button-primary" disabled={!cart.length || busy} onClick={payOnline} data-testid="button-shopify-checkout" style={{ width: '100%', marginTop: 12 }}>
+          <Bi en={busy ? 'Opening checkout…' : 'Checkout securely'} ur="محفوظ چیک آؤٹ" /> <ArrowUpRight size={16}/>
+        </button>
+        {checkoutError && <p className="form-alert" role="alert">{checkoutError}</p>}
         <p className="delivery-confirmation"><Bi en="Delivery charges and final delivery details are confirmed with you in WhatsApp." ur="ڈیلیوری چارجز اور حتمی تفصیل کی تصدیق واٹس ایپ پر کی جائے گی۔"/></p>
         <p className="checkout-trust"><MessageCircle size={17}/><Bi en="You review and send the message. No order is submitted automatically." ur="پیغام آپ خود دیکھ کر بھیجیں گے۔ آرڈر خودکار طور پر جمع نہیں ہوتا۔"/></p>
       </aside>
@@ -322,7 +339,7 @@ void Checkout;
 function CartDrawer({close}:{close:()=>void}) {
   const {cart,change,remove}=useStore(); const total=getTotal(cart);
   useEffect(()=>{const onKey=(event:KeyboardEvent)=>{if(event.key==='Escape')close();};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey);},[close]);
-  return <div className="modal-scrim" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)close();}}><section className="bag-drawer" role="dialog" aria-modal="true" aria-labelledby="bag-title" data-testid="panel-cart"><div className="drawer-head"><div><span className="eyebrow"><Bi en="Your selection" ur="آپ کا انتخاب"/></span><h2 id="bag-title"><Bi en="The bag" ur="بیگ"/></h2></div><button className="close-button" onClick={close} autoFocus aria-label="Close bag — بیگ بند کریں" data-testid="button-close-cart"><X size={19}/></button></div><p className="drawer-sub"><Bi en="Saved in this browser. Nothing is ordered yet." ur="اسی براؤزر میں محفوظ ہے۔ ابھی کوئی آرڈر نہیں ہوا۔"/></p>{cart.length?cart.map(line=><div className="drawer-item" key={line.slug}><img src={asset(product.photo)} alt="Al-Mizan original pack"/><div className="drawer-item-copy"><h3><Bi en={product.name} ur={product.ur}/></h3><p><Bi en={`200 g · ${money(product.price)}`} ur={`۲۰۰ گرام · ۲,۵۰۰ پاکستانی روپے`}/></p><button className="remove-link" onClick={()=>remove(line.slug)} data-testid={`drawer-remove-${line.slug}`}><Trash2 size={13}/><Bi en="Remove" ur="ہٹائیں"/></button></div><div className="drawer-controls"><strong>{money(line.quantity*product.price)}</strong><div className="quantity-controls"><button onClick={()=>change(line.slug,-1)} aria-label="Decrease quantity — تعداد کم کریں" data-testid={`drawer-decrease-${line.slug}`}><Minus size={12}/></button><span>{line.quantity}</span><button onClick={()=>change(line.slug,1)} aria-label="Increase quantity — تعداد بڑھائیں" data-testid={`drawer-increase-${line.slug}`}><Plus size={12}/></button></div></div></div>):<div className="empty-cart drawer-empty"><ShoppingBag size={28}/><h3><Bi en="A little space, for now." ur="فی الحال بیگ خالی ہے۔"/></h3><p><Bi en="Explore the product and add it when you are ready." ur="مصنوعات دیکھیں اور تیار ہونے پر بیگ میں شامل کریں۔"/></p><Link href="/products" className="button-outline" onClick={close} data-testid="link-drawer-products"><Bi en="Explore product" ur="مصنوعات دیکھیں"/></Link></div>}<div className="drawer-bottom"><div className="drawer-total"><span><Bi en="Listed total" ur="درج شدہ کل"/></span><strong>{money(total)}</strong></div><p><Bi en="Delivery charges and policies are not specified." ur="ڈیلیوری چارجز اور پالیسیاں درج نہیں ہیں۔"/></p><Link href="/checkout" onClick={close} className={`button-primary drawer-continue ${cart.length?'':'is-disabled'}`} data-testid="link-drawer-checkout"><Bi en="Review order enquiry" ur="آرڈر کی تفصیل دیکھیں"/> <ArrowRight size={16}/></Link></div></section></div>;
+  return <div className="modal-scrim" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)close();}}><section className="bag-drawer" role="dialog" aria-modal="true" aria-labelledby="bag-title" data-testid="panel-cart"><div className="drawer-head"><div><span className="eyebrow"><Bi en="Your selection" ur="آپ کا انتخاب"/></span><h2 id="bag-title"><Bi en="The bag" ur="بیگ"/></h2></div><button className="close-button" onClick={close} autoFocus aria-label="Close bag — بیگ بند کریں" data-testid="button-close-cart"><X size={19}/></button></div><p className="drawer-sub"><Bi en="Saved in this browser. Nothing is ordered yet." ur="اسی براؤزر میں محفوظ ہے۔ ابھی کوئی آرڈر نہیں ہوا۔"/></p>{cart.length?cart.map(line=><div className="drawer-item" key={line.slug}><img src={asset(product.photo)} alt="Al-Mizan original pack"/><div className="drawer-item-copy"><h3><Bi en={product.name} ur={product.ur}/></h3><p><Bi en={`200 g · ${money(product.price)}`} ur={`۲۰۰ گرام · ۲,۵۰۰ پاکستانی روپے`}/></p><button className="remove-link" onClick={()=>remove(line.slug)} data-testid={`drawer-remove-${line.slug}`}><Trash2 size={13}/><Bi en="Remove" ur="ہٹائیں"/></button></div><div className="drawer-controls"><strong>{money(line.quantity*product.price)}</strong><div className="quantity-controls"><button onClick={()=>change(line.slug,-1)} aria-label="Decrease quantity — تعداد کم کریں" data-testid={`drawer-decrease-${line.slug}`}><Minus size={12}/></button><span>{line.quantity}</span><button onClick={()=>change(line.slug,1)} aria-label="Increase quantity — تعداد بڑھائیں" data-testid={`drawer-increase-${line.slug}`}><Plus size={12}/></button></div></div></div>):<div className="empty-cart drawer-empty"><ShoppingBag size={28}/><h3><Bi en="A little space, for now." ur="فی الحال بیگ خالی ہے۔"/></h3><p><Bi en="Explore the product and add it when you are ready." ur="مصنوعات دیکھیں اور تیار ہونے پر بیگ میں شامل کریں۔"/></p><Link href="/products" className="button-outline" onClick={close} data-testid="link-drawer-products"><Bi en="Explore product" ur="مصنوعات دیکھیں"/></Link></div>}<div className="drawer-bottom"><div className="drawer-total"><span><Bi en="Listed total" ur="درج شدہ کل"/></span><strong>{money(total)}</strong></div><p><Bi en="Delivery charges are calculated at checkout." ur="ڈیلیوری چارجز چیک آؤٹ پر شامل ہوں گے۔"/></p><Link href="/checkout" onClick={close} className={`button-primary drawer-continue ${cart.length?'':'is-disabled'}`} data-testid="link-drawer-checkout"><Bi en="Review order enquiry" ur="آرڈر کی تفصیل دیکھیں"/> <ArrowRight size={16}/></Link></div></section></div>;
 }
 function AddedToast({close,openBag}:{close:()=>void;openBag:()=>void}) {
   return <aside className="added-toast" role="status" aria-live="polite" data-testid="toast-added">
@@ -337,7 +354,7 @@ function ImagePreview({src,close}:{src:string;close:()=>void}) {
   return <div className="image-modal" role="presentation" onMouseDown={event=>{if(event.currentTarget===event.target)close();}}><section role="dialog" aria-modal="true" aria-label={`${selected.labelEn} — ${selected.labelUr}`} className="image-modal-box" data-testid="dialog-image-preview"><button className="close-button image-close" onClick={close} autoFocus aria-label="Close image — تصویر بند کریں" data-testid="button-close-image"><X size={19}/></button><img src={src} alt={selected.altEn}/><p><Bi en={selected.labelEn} ur={selected.labelUr}/></p>{selected.file===product.photo && <p className="packaging-disclosure"><Bi en="Package claims are shown as printed and are not independently verified by this store." ur="پیک پر درج دعوے جوں کے توں ہیں؛ دکان نے ان کی الگ سے تصدیق نہیں کی۔"/></p>}</section></div>;
 }
 function Footer() {
-  return <footer className="footer"><div className="container-wide footer-main"><div><Brand footer/><p><Bi en="Tib-E-Nabwi is a herbal-products store. Find product information in English and Urdu, then contact us with questions." ur="طبِ نبوی ہربل مصنوعات کی دکان ہے۔ معلومات اردو اور انگریزی میں پڑھیں اور سوال ہو تو رابطہ کریں۔"/></p></div><div className="footer-nav"><span className="eyebrow"><Bi en="Explore" ur="دیکھیں"/></span><Link href="/products" data-testid="link-footer-products"><Bi en="The collection" ur="مصنوعات"/></Link><Link href="/checkout" data-testid="link-footer-checkout"><Bi en="Order enquiry" ur="آرڈر کی تفصیل"/></Link></div><div className="footer-contact"><span className="eyebrow"><Bi en="WhatsApp contact" ur="واٹس ایپ رابطہ"/></span><a href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer"><bdi>{number}</bdi> <ArrowUpRight size={14}/></a><p><Bi en="WhatsApp opens a draft for you to review and send." ur="واٹس ایپ میں مسودہ کھلے گا؛ اسے دیکھ کر خود بھیجیں۔"/></p></div></div><div className="container-wide footer-bottom"><span><Bi en="© Tib-E-Nabwi" ur="© طبِ نبوی"/></span><span><Bi en="Clear product details. No invented reviews or figures." ur="مصنوعات کی واضح معلومات؛ بغیر جعلی جائزوں اور اعداد کے۔"/></span></div></footer>;
+  return <footer className="footer"><div className="container-wide footer-main"><div><Brand footer/><p><Bi en="Tib-E-Nabwi is a herbal-products store. Find product information in English and Urdu, then contact us with questions." ur="طبِ نبوی ہربل مصنوعات کی دکان ہے۔ معلومات اردو اور انگریزی میں پڑھیں اور سوال ہو تو رابطہ کریں۔"/></p></div><div className="footer-nav"><span className="eyebrow"><Bi en="Explore" ur="دیکھیں"/></span><Link href="/products" data-testid="link-footer-products"><Bi en="The collection" ur="مصنوعات"/></Link><Link href="/checkout" data-testid="link-footer-checkout"><Bi en="Order enquiry" ur="آرڈر کی تفصیل"/></Link></div><div className="footer-nav"><span className="eyebrow"><Bi en="Policies" ur="پالیسیاں"/></span>{policyLinks.map(p=><a key={p.path} href={`https://${shopDomain}/policies/${p.path}`} target="_blank" rel="noreferrer" data-testid={`link-footer-${p.path}`}><Bi en={p.en} ur={p.ur}/></a>)}</div><div className="footer-contact"><span className="eyebrow"><Bi en="WhatsApp contact" ur="واٹس ایپ رابطہ"/></span><a href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer"><bdi>{number}</bdi> <ArrowUpRight size={14}/></a><p><Bi en="WhatsApp opens a draft for you to review and send." ur="واٹس ایپ میں مسودہ کھلے گا؛ اسے دیکھ کر خود بھیجیں۔"/></p></div></div><div className="container-wide footer-bottom"><span><Bi en="© Tib-E-Nabwi" ur="© طبِ نبوی"/></span><span><Bi en="Clear product details. No invented reviews or figures." ur="مصنوعات کی واضح معلومات؛ بغیر جعلی جائزوں اور اعداد کے۔"/></span></div></footer>;
 }
 function MissingPage() {
   return <main className="not-found" id="main-content" data-testid="page-not-found"><span className="eyebrow"><Bi en="A small detour" ur="ایک چھوٹا سا موڑ"/></span><h1><Bi en="This page isn't on the shelf." ur="یہ صفحہ شیلف پر موجود نہیں۔"/></h1><Link href="/" className="button-primary" data-testid="link-not-found-home"><Bi en="Return to the beginning" ur="صفحۂ اول پر واپس جائیں"/> <ArrowRight size={15}/></Link></main>;
