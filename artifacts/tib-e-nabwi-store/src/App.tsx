@@ -7,14 +7,21 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { CustomerReviews } from '@/components/storefront/CustomerReviews';
+import { HomepageTrustStats } from '@/components/storefront/HomepageTrustStats';
+import { TrustCertificateConcept } from '@/components/storefront/TrustCertificateConcept';
+import './components/storefront/storefront-sections.css';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Check, ClipboardList, Leaf, Languages, MessageCircle, Minus, PackageOpen, Plus, Search, ShoppingBag, Trash2, X } from 'lucide-react';
 import { Link, Route, Switch, useLocation, Router as WouterRouter, useRoute } from 'wouter';
 import './index.css';
+import { client } from "./shopifyClient";
 
 type Product = { slug: string; name: string; ur: string; price: number; grams: number; photo: string };
 type CartLine = { slug: string; quantity: number };
+const showDevelopmentPreview = import.meta.env.DEV;
 const product: Product = { slug: 'al-mizan', name: 'Al-Mizan Herbal Slim Detox Powder', ur: 'المیزان ہربل پاؤڈر', price: 2500, grams: 200, photo: 'al-mizan-original.jpeg' };
 const ingredients = [
   ['Senna leaf', 'سنا کے پتے'], ['Ajwain', 'اجوائن'], ['Kalonji (black seed)', 'کلونجی (کالا دانہ)'], ['Green tea', 'سبز چائے'],
@@ -58,15 +65,31 @@ function Bi({ en, ur, className = '' }: { en: ReactNode; ur: ReactNode; classNam
   return <span className={`bilingual ${className}`}><span lang="en" dir="ltr">{en}</span><span lang="ur" dir="rtl" className="urdu">{ur}</span></span>;
 }
 function Mark() {
-  return <svg className="mark-svg" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6.5c9.66 0 17.5 7.84 17.5 17.5S33.66 41.5 24 41.5 6.5 33.66 6.5 24 14.34 6.5 24 6.5Z" fill="none" stroke="currentColor" strokeWidth="1.2"/><path d="M24 33V21m0 8c-7.3 0-10.8-4.3-10.8-10.1 6.8 0 10.8 3.4 10.8 10.1Zm0-7.5c0-6.6 4-10.2 10.5-10.2 0 5.8-3.6 10.1-10.5 10.2Zm-8.1 3.8 8.1 5.2 8.2-5.2M16.7 36h14.6" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round"/><path d="M14.5 14.8h1.4M33 33.3h1.4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>;
+  return <svg className="mark-svg" viewBox="0 0 64 64" aria-hidden="true">
+    <circle cx="32" cy="32" r="27" fill="none" stroke="#d8b35d" strokeWidth="1.7"/>
+    <path d="M32 49V21" fill="none" stroke="currentColor" strokeWidth="2.7" strokeLinecap="round"/>
+    <path d="M31.7 37c-9.2 0-14-4.9-14-11.8 8.4 0 13.7 4.3 14 11.8Z" fill="currentColor"/>
+    <path d="M32.3 30.4c0-8 5-12.5 12.2-12.5 0 7.4-4.5 12.4-12.2 12.5Z" fill="#e1bd66"/>
+    <path d="M31.8 44.3c-7.3 0-10.9-3.9-10.9-9.2 6.6 0 10.7 3.3 10.9 9.2Z" fill="#e1bd66"/>
+    <path d="M32.2 39.9c0-6.1 3.9-9.6 9.5-9.6 0 5.8-3.5 9.5-9.5 9.6Z" fill="currentColor"/>
+    <path d="m24 47 8 4 8-4" fill="none" stroke="#e1bd66" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>;
 }
 function Brand({ footer = false }: { footer?: boolean }) {
   return <Link href="/" className={`brand ${footer ? 'brand-footer' : ''}`} aria-label="Tib-E-Nabwi, طبِ نبوی — home" data-testid="link-brand"><span className="brand-emblem"><Mark /></span><span className="brand-type"><strong>Tib-E-Nabwi</strong><span className="brand-tagline">Herbal goods</span><span lang="ur" dir="rtl" className="brand-tagline urdu">ہربل مصنوعات</span></span></Link>;
 }
 function App() {
+  // inside function App() { ... }
+useEffect(() => {
+  client
+    .request(`{ shop { name } products(first: 3) { edges { node { title } } } }`)
+    .then((res) => console.log("Shopify says:", res))
+    .catch((err) => console.error("Shopify error:", err));
+  }, []);
   const [location] = useLocation();
   const [cart, setCart] = useState<CartLine[]>(() => { try { return JSON.parse(localStorage.getItem('tn-cart') || '[]') as CartLine[]; } catch { return []; } });
   const [cartOpen, setCartOpen] = useState(false);
+  const [storyOpen, setStoryOpen] = useState(false);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [toastOpen, setToastOpen] = useState(false);
   const toastTimer = useRef<number | undefined>(undefined);
@@ -98,18 +121,33 @@ function App() {
   const count = cart.reduce((sum, line) => sum + line.quantity, 0);
   const ctx = useMemo(() => ({ cart, add, change, remove, count, openCart: () => setCartOpen(true), preview: setPreviewSrc }), [cart, count]);
   return <QueryClientProvider client={queryClient}><TooltipProvider><StoreContext.Provider value={ctx}>
-     <div className="site-shell"><Header />
+     <div className="site-shell"><Header openStory={() => setStoryOpen(true)} />
      <RoutedErrorBoundary><Switch><Route path="/" component={Home}/><Route path="/products" component={Catalog}/><Route path="/checkout" component={CheckoutFlow}/><Route path="/product/:slug" component={ProductDetail}/><Route component={MissingPage}/></Switch></RoutedErrorBoundary>
       <Footer />{cartOpen && <CartDrawer close={() => setCartOpen(false)}/>}
       {previewSrc && <ImagePreview src={previewSrc} close={() => setPreviewSrc(null)}/>}
       {toastOpen && <AddedToast close={() => setToastOpen(false)} openBag={() => { setToastOpen(false); setCartOpen(true); }}/>}
+       <StoryDialog open={storyOpen} onOpenChange={setStoryOpen} />
     </div><Toaster/>
   </StoreContext.Provider></TooltipProvider></QueryClientProvider>;
 }
-function Header() {
+function Header({ openStory }: { openStory: () => void }) {
   const { count, openCart } = useStore(); const [location] = useLocation();
-  const nav = [{ href: '/', en: 'Home', ur: 'ہوم' }, { href: '/products', en: 'Shop', ur: 'مصنوعات' }, { href: '/#brand-story', en: 'Our story', ur: 'ہمارا تعارف' }, { href: '/checkout', en: 'Order', ur: 'آرڈر' }];
-  return <div className="header-stack"><div className="topline"><a className="topline-order" href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer" data-testid="link-header-whatsapp"><MessageCircle size={22} aria-hidden="true"/><span><strong><Bi en="Order easily on WhatsApp" ur="واٹس ایپ پر آسانی سے آرڈر کریں"/></strong><small><bdi dir="ltr">{number}</bdi></small></span><ArrowUpRight size={18} aria-hidden="true"/></a></div><header className="site-header"><div className="container-wide header-main"><Brand/><nav className="nav-links" aria-label="Main navigation">{nav.map(item=><Link key={item.href} href={item.href} className="nav-link" aria-current={location === item.href ? 'page' : undefined} data-testid={`link-nav-${item.href === '/' ? 'home' : item.href === '/products' ? 'products' : item.href === '/checkout' ? 'checkout' : 'story'}`}><Bi en={item.en} ur={item.ur}/></Link>)}</nav><button className="bag-trigger" onClick={openCart} aria-label={`Open bag, shopping bag کھولیں, ${count} items`} data-testid="button-open-cart"><ShoppingBag size={17}/><span><Bi en="Bag" ur="بیگ"/></span><b className="cart-count" data-testid="text-cart-count">{count}</b></button></div></header></div>;
+  const nav = [{ href: '/', en: 'Home', ur: 'ہوم' }, { href: '/products', en: 'Shop', ur: 'مصنوعات' }, { href: '/checkout', en: 'Order', ur: 'آرڈر' }];
+  return <div className="header-stack"><div className="topline"><a className="topline-order" href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer" data-testid="link-header-whatsapp"><MessageCircle size={22} aria-hidden="true"/><span><strong><Bi en="Order easily on WhatsApp" ur="واٹس ایپ پر آسانی سے آرڈر کریں"/></strong><small><bdi dir="ltr">{number}</bdi></small></span><ArrowUpRight size={18} aria-hidden="true"/></a></div><header className="site-header"><div className="container-wide header-main"><Brand/><nav className="nav-links" aria-label="Main navigation">{nav.slice(0, 2).map(item=><Link key={item.href} href={item.href} className="nav-link" aria-current={location === item.href ? 'page' : undefined} data-testid={`link-nav-${item.href === '/' ? 'home' : 'products'}`}><Bi en={item.en} ur={item.ur}/></Link>)}<button type="button" className="nav-link nav-story-trigger" onClick={openStory} aria-haspopup="dialog" data-testid="button-nav-story"><Bi en="Our Story" ur="ہماری کہانی"/></button><Link href="/checkout" className="nav-link" aria-current={location === '/checkout' ? 'page' : undefined} data-testid="link-nav-checkout"><Bi en="Order" ur="آرڈر"/></Link></nav><button className="bag-trigger" onClick={openCart} aria-label={`Open bag, shopping bag کھولیں, ${count} items`} data-testid="button-open-cart"><ShoppingBag size={17}/><span><Bi en="Bag" ur="بیگ"/></span><b className="cart-count" data-testid="text-cart-count">{count}</b></button></div></header></div>;
+}
+function StoryDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="story-dialog" aria-describedby="story-dialog-copy">
+        <div className="story-dialog-brand"><span><Mark /></span><small>TIB-E-NABWI DAWAKHANA.STORE</small></div>
+        <DialogTitle className="story-dialog-title">Our Story <span lang="ur" dir="rtl">ہماری کہانی</span></DialogTitle>
+        <DialogDescription id="story-dialog-copy" className="story-dialog-copy">
+          <span lang="en" dir="ltr">Welcome to Tib-E-Nabwi Dawakhana.store — a brand inspired by the rich heritage of traditional herbal wellness and the value of caring for yourself naturally. Our aim is to bring you thoughtfully presented herbal products while making your shopping experience simple, convenient, and trustworthy. We believe that wellness begins with informed choices, quality-focused service, and a balanced lifestyle. Every customer matters to us, and we are committed to serving you with honesty, care, and respect. Thank you for being part of our journey!</span>
+          <span lang="ur" dir="rtl">Tib-E-Nabwi Dawakhana.store میں خوش آمدید! ہمارا مقصد روایتی جڑی بوٹیوں سے متعلق علم اور قدرتی طرزِ زندگی کی اہمیت سے متاثر ہو کر آپ تک معیاری انداز میں پیش کی گئی ہربل مصنوعات پہنچانا ہے۔ ہم چاہتے ہیں کہ آپ کو خریداری کا ایک آسان، سہل اور قابلِ اعتماد تجربہ حاصل ہو۔ ہمارا یقین ہے کہ بہتر طرزِ زندگی کے لیے درست معلومات، احتیاط اور متوازن معمولات اہم ہیں۔ ہمارے لیے ہر گاہک قابلِ قدر ہے، اور ہم ایمانداری، توجہ اور احترام کے ساتھ آپ کی خدمت کرنے کی کوشش کرتے ہیں۔ ہماری اس کاوش کا حصہ بننے پر آپ کا شکریہ!</span>
+        </DialogDescription>
+      </DialogContent>
+    </Dialog>
+  );
 }
 function Home() {
   const { add, preview } = useStore(); const [,setLocation]=useLocation();
@@ -144,15 +182,16 @@ function Home() {
         <div className="store-value"><MessageCircle/><Bi en="WhatsApp enquiries" ur="واٹس ایپ پر رابطہ"/></div>
       </div>
     </section>
+    <HomepageTrustStats previewMode={showDevelopmentPreview} />
+    {showDevelopmentPreview && <TrustCertificateConcept />}
     <section className="collection-section container-wide" id="collection">
       <div className="collection-heading"><div><span className="eyebrow"><Bi en="The Tib-E-Nabwi collection" ur="طبِ نبوی کی مصنوعات"/></span><h2><Bi en={<>Herbal products,<br/>thoughtfully presented.</>} ur={<>ہربل مصنوعات،<br/>صاف اور آسان انداز میں۔</>}/></h2></div><p><Bi en="Meet Al-Mizan, the first product in the shop. Its ingredients, size, and listed price are shown here without invented ratings or health promises." ur="المیزان دکان کی پہلی مصنوعات ہے۔ اس کے اجزاء، وزن اور قیمت واضح طور پر درج ہیں؛ جعلی جائزے یا صحت سے متعلق دعوے نہیں۔"/></p></div>
       <ProductCard/>
     </section>
     <section className="brand-story" id="brand-story">
-      <div className="brand-story-image"><img src={asset('al-mizan-herbs.jpg')} alt="Decorative still life of herbs and seeds" loading="lazy"/><span className="brand-story-label"><Bi en="Botanical still life" ur="نباتاتی آرائشی تصویر"/></span></div>
+      <div className="brand-story-image"><img src={asset('al-mizan-herbs.jpg')} alt="Decorative still life of herbs and seeds" loading="eager" decoding="async"/><span className="brand-story-label"><Bi en="Botanical still life" ur="نباتاتی آرائشی تصویر"/></span></div>
       <div className="brand-story-copy"><span className="eyebrow"><Bi en="The Tib-E-Nabwi approach" ur="طبِ نبوی کا انداز"/></span><h2><Bi en={<>Good choices start<br/>with clear details.</>} ur={<>بہتر انتخاب کی شروعات<br/>واضح معلومات سے ہوتی ہے۔</>}/></h2><p><Bi en="We want every product page to make the basics easy to find: what the pack says, what it weighs, what it costs, and how to ask a question." ur="ہم چاہتے ہیں کہ ہر صفحے پر ضروری باتیں آسانی سے ملیں: پیک پر کیا لکھا ہے، وزن کتنا ہے، قیمت کیا ہے اور سوال کیسے پوچھنا ہے۔"/></p><Link href="/products" className="button-text" data-testid="link-story-products"><Bi en="Browse the collection" ur="مصنوعات دیکھیں"/> <ArrowRight size={16}/></Link></div>
     </section>
-    <section className="review-note container-wide" data-testid="note-no-reviews"><div className="review-seal"><Leaf size={24}/></div><div><span className="eyebrow"><Bi en="Customer feedback" ur="صارفین کی رائے"/></span><h2><Bi en="No verified reviews yet." ur="ابھی تصدیق شدہ جائزے موجود نہیں۔"/></h2><p><Bi en="We’ll publish real customer feedback only after it has been received and approved for display." ur="ہم صرف حقیقی صارفین کی رائے اجازت کے ساتھ یہاں شائع کریں گے۔"/></p></div></section>
     <section className="last-cta"><div className="container-wide last-cta-inner"><div className="cta-mark"><Mark/></div><div><span className="eyebrow"><Bi en="A question about the shop?" ur="دکان کے بارے میں سوال ہے؟"/></span><h2><Bi en={<>Tib-E-Nabwi is<br/>here to help.</>} ur={<>طبِ نبوی سے<br/>رابطہ کریں۔</>}/></h2></div><div className="cta-actions"><Link href="/products" className="button-primary" data-testid="link-final-products"><Bi en="Explore products" ur="مصنوعات دیکھیں"/> <ArrowRight size={16}/></Link><a className="button-outline" href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer" data-testid="link-whatsapp-direct"><Bi en="WhatsApp" ur="واٹس ایپ"/> <bdi>{number}</bdi></a></div></div></section>
   </main>;
 }
@@ -196,7 +235,7 @@ function ProductDetail() {
        <div className="detail-gallery-purchase"><ProductGallery/><button className="button-primary add-wide gallery-add" onClick={()=>{add(product.slug);setLocation('/checkout');}} data-testid="button-add-detail-al-mizan"><Bi en="Add to Cart" ur="آرڈر میں شامل کریں"/> <ShoppingBag size={18}/></button><p className="gallery-order-hint"><Bi en="Added to your bag; next, review your details at checkout." ur="بیگ میں شامل ہو گا؛ اگلا مرحلہ چیک آؤٹ پر تفصیل دیکھنا ہے۔"/></p></div>
        <div className="detail-purchase"><span className="eyebrow"><Bi en="From the Tib-E-Nabwi collection" ur="طبِ نبوی کی مصنوعات میں سے"/></span><h1><Bi en={product.name} ur={product.ur}/></h1><p className="detail-deck"><Bi en="Herbal powder · Net weight 200 g" ur="ہربل پاؤڈر · خالص وزن ۲۰۰ گرام"/></p><div className="detail-price"><strong><Bi en={money(product.price)} ur="۲,۵۰۰ پاکستانی روپے"/></strong><span><Bi en="Price supplied by the shop" ur="دکاندار کی درج کردہ قیمت"/></span></div><p className="product-description"><Bi en={productDescription.en} ur={productDescription.ur}/></p><p className="handoff-note"><Bi en="Your bag stays in this browser. WhatsApp opens a draft for you to review and send." ur="آپ کا بیگ اسی براؤزر میں رہے گا۔ واٹس ایپ کا مسودہ دیکھ کر خود بھیجیں۔"/></p><a className="detail-wa" href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer" data-testid="link-detail-support"><Bi en="Customer support" ur="صارفین کے لیے رابطہ"/> <bdi>{number}</bdi> <ArrowUpRight size={14}/></a></div>
     </section>
-    <section className="product-information container-wide" data-testid="product-information"><div className="product-info-heading"><span className="eyebrow"><Bi en="Product details" ur="مصنوعات کی معلومات"/></span><h2><Bi en="What you should know." ur="ضروری معلومات۔"/></h2><p><Bi en="The ingredient names and manufacturer below are transcribed from the supplied product label." ur="اجزاء اور کمپنی کے نام فراہم کردہ پیکنگ کے لیبل سے نقل کیے گئے ہیں۔"/></p></div>
+    <section className="product-information container-wide" data-testid="product-information"><div className="product-info-heading"><span className="eyebrow"><Bi en="Product details" ur="مصنوعات کی معلومات"/></span><h2><Bi en="What you should know." ur="ضروری معلومات۔"/></h2><p><Bi en="The ingredient names and manufacturer below are transcribed from the supplied product label." ur="اجزاء اور کمپنی کے نام فراہم کردہ پیکنگ کے لیبل سے نقل کیے گئے ہیں۔"/></p><a className="product-reviews-jump" href="#customer-reviews"><Bi en="Read customer reviews" ur="صارفین کی آراء پڑھیں"/> <ArrowRight size={14}/></a></div>
       <dl className="product-facts">
         <div><dt><Bi en="Net weight" ur="خالص وزن"/></dt><dd><Bi en="200 g" ur="۲۰۰ گرام"/></dd></div>
         <div><dt><Bi en="Ingredients (as listed on the label)" ur="لیبل پر درج اجزاء"/></dt><dd><Bi en="Senna leaf, ajwain, kalonji (black seed), green tea, mint, saunf (fennel), and ginger. The list is transcribed from the supplied label and has not been independently verified." ur="سنا کے پتے، اجوائن، کلونجی، سبز چائے، پودینہ، سونف اور ادرک۔ یہ فہرست فراہم کردہ لیبل سے نقل کی گئی ہے؛ الگ سے تصدیق نہیں کی گئی۔"/></dd></div>
@@ -207,7 +246,15 @@ function ProductDetail() {
       </dl>
     </section>
     <section className="before-use container-wide" data-testid="before-use-note"><div className="before-use-icon"><ClipboardList size={22}/></div><div><span className="eyebrow"><Bi en="Before use" ur="استعمال سے پہلے"/></span><p><Bi en={beforeUse.en} ur={beforeUse.ur}/></p></div></section>
-    <section className="review-note container-wide" data-testid="note-product-no-reviews"><div className="review-seal"><Leaf size={24}/></div><div><span className="eyebrow"><Bi en="Customer feedback" ur="صارفین کی رائے"/></span><h2><Bi en="No verified reviews yet." ur="ابھی تصدیق شدہ جائزے موجود نہیں۔"/></h2><p><Bi en="Be the first to share a review with us on WhatsApp." ur="واٹس ایپ پر اپنی رائے دے کر پہلے جائزہ دینے والے بنیں۔"/></p></div></section>
+    <CustomerReviews
+      id="customer-reviews"
+      previewMode={showDevelopmentPreview}
+      emptyAction={
+        <a href={`https://wa.me/${waNumber}?text=${encodeURIComponent('I would like to share feedback about the Al-Mizan product.')}`} target="_blank" rel="noreferrer" data-testid="link-share-review-whatsapp">
+          <Bi en="Be the first to share a review with us on WhatsApp." ur="واٹس ایپ پر اپنی رائے دے کر پہلے جائزہ دینے والے بنیں۔"/>
+        </a>
+      }
+    />
     <section className="product-image-note container-wide"><Leaf size={17}/><p><Bi en="Product name and package imagery are shown as supplied. Claims printed on the package are not independently verified by this store." ur="مصنوعات کا نام اور پیکنگ کی تصویر فراہم کردہ مواد کے مطابق ہے۔ پیک پر درج دعووں کی دکان نے الگ سے تصدیق نہیں کی۔"/></p></section>
   </main>;
 }

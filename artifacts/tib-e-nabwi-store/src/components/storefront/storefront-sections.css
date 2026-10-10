@@ -1,0 +1,2406 @@
+.storefront-section-inner {
+  display: grid;
+  gap: 24px;
+}
+
+.storefront-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.storefront-eyebrow {
+  display: block;
+  margin-bottom: 9px;
+  color: #9b7938;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.storefront-section-heading h2 {
+  position: relative;
+  margin: 0;
+  color: #075039;
+  font: 500 clamp(30px, 4vw, 46px)/1.12 var(--app-font-serif);
+  letter-spacing: -.025em;
+}
+
+.storefront-section-heading h2::after {
+  display: block;
+  width: 54px;
+  height: 2px;
+  margin-top: 13px;
+  background: linear-gradient(90deg, #c7a354, rgb(199 163 84 / 8%));
+  content: "";
+}
+
+.storefront-section-heading h2 > span {
+  display: block;
+  margin-top: 7px;
+  color: #61735b;
+  font: 400 .7em/1.9 'Noto Nastaliq Urdu', serif;
+  letter-spacing: 0;
+}
+
+.store-reviews {
+  padding-block: clamp(48px, 7vw, 88px);
+  border-block: 1px solid #e6dfcf;
+  background:
+    radial-gradient(ellipse at 10% 15%, rgb(199 163 84 / 8%), transparent 35%),
+    #f7f3e9;
+}
+
+.store-review-summary {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  color: #47564a;
+  font-size: 12px;
+  text-align: right;
+}
+
+.store-review-summary strong {
+  color: #075039;
+  font-size: 24px;
+}
+
+.store-review-summary strong span,
+.store-review-star > span {
+  color: #a8833d;
+}
+
+.store-preview-label {
+  justify-self: start;
+  margin: -12px 0 0;
+  color: #715f3a;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  line-height: 1.6;
+  opacity: .82;
+}
+
+.store-preview-label > span,
+.store-stats-empty > span {
+  display: block;
+  margin-top: 1px;
+  color: #71806e;
+  font: 400 10px/1.8 'Noto Nastaliq Urdu', serif;
+  letter-spacing: 0;
+}
+
+.store-reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.store-review-card {
+  position: relative;
+  min-width: 0;
+  padding: 23px;
+  border: 1px solid #e8e1d2;
+  border-radius: 5px 18px 5px 18px;
+  background:
+    radial-gradient(circle at 100% 0, rgb(199 163 84 / 10%), transparent 28%),
+    #fffdf7;
+  box-shadow: 0 4px 10px rgb(37 42 38 / 4%), 0 14px 30px rgb(37 42 38 / 6%);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.store-review-card:hover {
+  transform: translateY(-4px);
+  border-color: rgb(168 131 61 / 55%);
+  box-shadow: 0 16px 34px rgb(37 42 38 / 10%);
+}
+
+.store-review-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.store-review-stars {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.store-review-star {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.store-review-rating-value {
+  color: #075039;
+  font: 700 12px/1 var(--app-font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.store-review-rating-value > span {
+  padding-left: 2px;
+  color: #697064;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.store-review-card blockquote {
+  min-height: 82px;
+  margin: 14px 0 18px;
+  color: #252a26;
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.store-review-card blockquote[lang='ur'] {
+  min-height: 96px;
+  font: 400 16px/2 'Noto Nastaliq Urdu', serif;
+  text-align: right;
+}
+
+.store-review-byline {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #eee8db;
+  color: #075039;
+  font-size: 12px;
+}
+
+.store-review-byline time {
+  color: #697064;
+  font-size: 10px;
+}
+
+.store-reviews-empty,
+.store-stats-empty {
+  margin: 0;
+  padding: 25px;
+  border: 1px solid #d9e1d3;
+  border-radius: 16px;
+  color: #252a26;
+  background: #fffdf7;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.store-reviews-empty p {
+  margin: 0;
+}
+
+.store-reviews-empty [lang='ur'] {
+  margin-top: 3px;
+  font: 400 15px/2 'Noto Nastaliq Urdu', serif;
+}
+
+.store-reviews-empty a {
+  display: inline-block;
+  margin-top: 12px;
+  color: #075039;
+  font-size: 12px;
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
+.store-trust-stats {
+  padding-block: clamp(44px, 6vw, 72px);
+  background: #f7f3e9;
+}
+
+.store-trust-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.store-trust-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  min-width: 0;
+  min-height: 205px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 23px;
+  border: 1px solid #e6dfcf;
+  border-radius: 5px 22px 5px 22px;
+  background:
+    radial-gradient(circle at 100% 0, rgb(199 163 84 / 12%), transparent 32%),
+    #fffdf7;
+  box-shadow: 0 4px 11px rgb(37 42 38 / 4%), 0 14px 28px rgb(37 42 38 / 6%);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.store-trust-card::after {
+  position: absolute;
+  right: -24px;
+  bottom: -35px;
+  width: 100px;
+  height: 100px;
+  border: 1px solid rgb(168 131 61 / 20%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 9px rgb(168 131 61 / 4%), 0 0 0 19px rgb(168 131 61 / 3%);
+  content: "";
+  pointer-events: none;
+}
+
+.store-trust-card:hover {
+  transform: translateY(-5px);
+  border-color: rgb(168 131 61 / 55%);
+  box-shadow: 0 10px 18px rgb(37 42 38 / 6%), 0 24px 38px rgb(37 42 38 / 11%);
+}
+
+.store-trust-card > svg {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 15px;
+  color: #a8833d;
+  stroke-width: 1.7;
+}
+
+.store-trust-card > strong {
+  color: #075039;
+  font: 600 clamp(27px, 3.3vw, 40px)/1.1 var(--app-font-serif);
+  letter-spacing: -.035em;
+}
+
+.store-trust-card > span {
+  margin-top: 9px;
+  color: #39483d;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.store-trust-card > span[lang='ur'] {
+  margin-top: 1px;
+  color: #61735b;
+  font: 400 12px/1.9 'Noto Nastaliq Urdu', serif;
+}
+
+.store-trust-card > small {
+  margin-top: 11px;
+  color: #697064;
+  font-size: 9px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.store-stats-empty {
+  background: #fffdf7;
+  font-size: 13px;
+}
+
+.store-certificate-concept {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(60px, 8vw, 100px);
+  background:
+    radial-gradient(ellipse at 12% 30%, rgb(199 163 84 / 16%), transparent 30%),
+    radial-gradient(ellipse at 88% 75%, rgb(74 122 88 / 31%), transparent 33%),
+    linear-gradient(135deg, #063b2e, #0c513b 52%, #07372d);
+}
+
+.store-certificate-concept::before,
+.store-certificate-concept::after {
+  position: absolute;
+  width: 390px;
+  height: 390px;
+  border: 1px solid rgb(228 207 150 / 15%);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+.store-certificate-concept::before {
+  top: -245px;
+  left: -160px;
+}
+
+.store-certificate-concept::after {
+  right: -200px;
+  bottom: -275px;
+  width: 520px;
+  height: 520px;
+}
+
+.store-certificate-card {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+  padding: 14px;
+  border: 4px double #a8833d;
+  background:
+    radial-gradient(ellipse at 50% 18%, rgb(255 255 255 / 78%), transparent 43%),
+    radial-gradient(ellipse at 50% 110%, rgb(177 142 78 / 12%), transparent 42%),
+    repeating-linear-gradient(0deg, rgb(107 86 47 / 2.4%) 0, rgb(107 86 47 / 2.4%) 1px, transparent 1px, transparent 4px),
+    #fffdf4;
+  box-shadow:
+    0 3px 0 rgb(255 255 255 / 55%) inset,
+    0 -4px 0 rgb(134 106 53 / 13%) inset,
+    0 4px 9px rgb(0 0 0 / 13%),
+    0 28px 65px rgb(0 0 0 / 40%);
+  transform: perspective(1400px) rotateX(1deg) rotateZ(-.25deg);
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+
+.store-certificate-card:hover {
+  box-shadow: 0 3px 0 rgb(255 255 255 / 55%) inset, 0 -4px 0 rgb(134 106 53 / 13%) inset, 0 7px 15px rgb(0 0 0 / 15%), 0 36px 74px rgb(0 0 0 / 46%);
+  transform: perspective(1400px) rotateX(0) rotateZ(0);
+}
+
+.store-certificate-card::before {
+  position: absolute;
+  inset: 22px;
+  border: 1px solid rgb(7 80 57 / 27%);
+  content: "";
+  pointer-events: none;
+}
+
+.store-certificate-card::after {
+  position: absolute;
+  inset: 28px;
+  border: 1px solid rgb(199 163 84 / 42%);
+  content: "";
+  pointer-events: none;
+}
+
+.store-certificate-content {
+  position: relative;
+  display: flex;
+  min-height: 900px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(52px, 7vw, 74px) clamp(38px, 8vw, 92px);
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 48%, rgb(255 255 255 / 30%), transparent 67%),
+    repeating-linear-gradient(90deg, transparent 0, rgb(128 101 55 / 1.2%) 1px, transparent 2px, transparent 7px);
+}
+
+.store-certificate-content::before,
+.store-certificate-content::after {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  border-color: #a8833d;
+  border-style: solid;
+  content: "";
+  opacity: .75;
+}
+
+.store-certificate-content::before {
+  top: 26px;
+  left: 26px;
+  border-width: 1px 0 0 1px;
+}
+
+.store-certificate-content::after {
+  right: 26px;
+  bottom: 26px;
+  border-width: 0 1px 1px 0;
+}
+
+.store-certificate-label {
+  margin: 0 0 21px;
+  color: #745c2b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .11em;
+  line-height: 1.6;
+}
+
+.store-certificate-label > span {
+  display: block;
+  font: 400 13px/1.9 'Noto Nastaliq Urdu', serif;
+  letter-spacing: 0;
+}
+
+.store-certificate-emblem {
+  position: relative;
+  display: grid;
+  width: 86px;
+  height: 86px;
+  place-items: center;
+  margin-bottom: 17px;
+  border: 1px solid #c7a354;
+  border-radius: 50%;
+  color: #075039;
+  outline: 1px solid rgb(199 163 84 / 56%);
+  outline-offset: 5px;
+  background: radial-gradient(circle at 35% 30%, #fffef9, #f0e5c9 82%);
+  box-shadow: inset 0 0 0 4px #fffdf4, inset 0 0 0 5px rgb(168 131 61 / 40%), 0 5px 14px rgb(37 42 38 / 9%);
+}
+
+.store-certificate-emblem > svg {
+  width: 46px;
+  height: 46px;
+  stroke-width: 1;
+}
+
+.store-certificate-overline {
+  color: #9b7938;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.store-certificate-content h2 {
+  margin: 10px 0;
+  color: #075039;
+  font: 500 clamp(29px, 4.5vw, 43px)/1.18 var(--app-font-serif);
+}
+
+.store-certificate-content h2 > span,
+.store-certificate-description > span,
+.store-certificate-disclaimer > span {
+  display: block;
+  font-family: 'Noto Nastaliq Urdu', serif;
+  letter-spacing: 0;
+}
+
+.store-certificate-content h2 > span {
+  margin-top: 4px;
+  color: #61735b;
+  font-size: .68em;
+  line-height: 2;
+}
+
+.store-certificate-description {
+  max-width: 570px;
+  margin: 10px 0 23px;
+  color: #39483d;
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.store-certificate-description > span {
+  margin-top: 3px;
+  color: #61735b;
+  font-size: 14px;
+  line-height: 2;
+}
+
+.store-certificate-pledges {
+  display: grid;
+  gap: 7px;
+  width: min(100%, 520px);
+  margin: 0 0 26px;
+  padding: 0;
+  color: #39483d;
+  font-size: 11px;
+  line-height: 1.6;
+  list-style: none;
+  text-align: left;
+}
+
+.store-certificate-pledges li {
+  display: grid;
+  grid-template-columns: 17px 1fr auto;
+  align-items: center;
+  gap: 7px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgb(168 131 61 / 22%);
+}
+
+.store-certificate-pledges svg {
+  width: 14px;
+  height: 14px;
+  color: #a8833d;
+  stroke-width: 2;
+}
+
+.store-certificate-pledges [lang='ur'] {
+  color: #61735b;
+  font: 400 12px/1.8 'Noto Nastaliq Urdu', serif;
+}
+
+.store-certificate-signoff {
+  display: flex;
+  width: min(100%, 520px);
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  color: #075039;
+}
+
+.store-certificate-seal {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  width: 86px;
+  height: 86px;
+  flex: none;
+  align-content: center;
+  justify-items: center;
+  border: 2px solid #916d2d;
+  border-radius: 50%;
+  outline: 1px solid rgb(168 131 61 / 48%);
+  outline-offset: 4px;
+  color: #075039;
+  background:
+    radial-gradient(circle at 33% 24%, #fff2bd 0, #e3bd60 24%, #b8892e 62%, #8a6424 100%);
+  box-shadow: 0 4px 9px rgb(37 42 38 / 24%), inset 0 2px 3px rgb(255 255 255 / 65%), inset 0 -4px 7px rgb(87 55 11 / 30%);
+}
+
+.store-certificate-seal::before {
+  position: absolute;
+  z-index: -1;
+  inset: -10px;
+  border: 1px solid #c7a354;
+  background: repeating-conic-gradient(from 0deg, #e7ca7b 0deg 5deg, #a87a28 5deg 10deg);
+  clip-path: polygon(50% 0%,55% 8%,62% 3%,65% 12%,73% 9%,75% 18%,84% 19%,83% 28%,92% 33%,87% 41%,97% 49%,89% 56%,95% 64%,85% 69%,87% 78%,77% 80%,73% 89%,65% 86%,59% 96%,52% 90%,44% 100%,39% 90%,30% 94%,27% 84%,17% 84%,18% 74%,8% 69%,13% 60%,3% 53%,10% 45%,4% 36%,14% 31%,12% 21%,22% 20%,27% 11%,36% 15%,43% 5%);
+  content: "";
+  filter: drop-shadow(0 3px 2px rgb(71 50 13 / 35%));
+}
+
+.store-certificate-seal > svg {
+  width: 23px;
+  height: 23px;
+  stroke-width: 1.3;
+  color: #684816;
+  filter: drop-shadow(0 1px 0 rgb(255 244 199 / 75%));
+}
+
+.store-certificate-seal > span {
+  margin-top: 1px;
+  font: 600 12px/1 var(--app-font-serif);
+  letter-spacing: .12em;
+  color: #684816;
+  text-shadow: 0 1px 0 rgb(255 244 199 / 70%);
+}
+
+.store-certificate-signature-block {
+  display: flex;
+  width: min(100%, 270px);
+  flex-direction: column;
+  align-items: center;
+}
+
+.store-certificate-signature {
+  color: #285d43;
+  font: italic 600 25px/1.1 'Cormorant Garamond', Georgia, serif;
+}
+
+.store-certificate-signature-line {
+  width: 100%;
+  margin-top: 5px;
+  border-top: 1px solid #a8833d;
+}
+
+.store-certificate-issuer {
+  margin-top: 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.store-certificate-signoff > [lang='ur'] {
+  font: 400 12px/1.9 'Noto Nastaliq Urdu', serif;
+}
+
+.store-certificate-footnote {
+  margin: 13px auto 0;
+  color: #e9e0c8;
+  font-size: 10px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.store-certificate-footnote > span {
+  display: block;
+  color: #d9ceb0;
+  font: 400 11px/1.8 'Noto Nastaliq Urdu', serif;
+}
+
+@media (max-width: 960px) {
+  .store-trust-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .store-reviews-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .storefront-section-inner {
+    gap: 19px;
+  }
+
+  .storefront-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .store-review-summary {
+    text-align: left;
+  }
+}
+
+@media (max-width: 520px) {
+  .store-reviews-grid,
+  .store-trust-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .store-review-card {
+    padding: 18px;
+  }
+
+  .store-review-card blockquote,
+  .store-review-card blockquote[lang='ur'] {
+    min-height: 0;
+  }
+
+  .store-trust-card {
+    min-height: 170px;
+  }
+
+  .store-certificate-content {
+    min-height: 790px;
+    padding: 54px 34px 45px;
+  }
+
+  .store-certificate-content::before {
+    top: 17px;
+    left: 17px;
+  }
+
+  .store-certificate-content::after {
+    right: 17px;
+    bottom: 17px;
+  }
+
+  .store-certificate-signoff {
+    align-items: center;
+    flex-direction: column-reverse;
+  }
+
+  .store-certificate-pledges {
+    font-size: 10px;
+  }
+
+  .store-review-star {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .store-certificate-card,
+  .store-review-card,
+  .store-trust-card {
+    transition: none;
+  }
+}
+
+.store-reviews,
+.store-trust-stats {
+  position: relative;
+}
+
+.store-reviews::before,
+.store-trust-stats::before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(100% - 48px, 1320px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(168 131 61 / 34%), transparent);
+  content: "";
+  transform: translateX(-50%);
+}
+
+.store-review-card {
+  border-radius: 4px 20px 4px 20px;
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 86%), transparent 55%),
+    radial-gradient(circle at 100% 0, rgb(199 163 84 / 12%), transparent 32%),
+    #fffdf7;
+}
+
+.store-review-rating-row {
+  min-height: 27px;
+}
+
+.store-review-star {
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 1px 1px rgb(117 85 27 / 18%));
+}
+
+.store-review-rating-value {
+  padding: 5px 8px;
+  border: 1px solid rgb(168 131 61 / 25%);
+  border-radius: 99px;
+  background: #fbf5e5;
+}
+
+.store-review-card blockquote {
+  position: relative;
+  margin-top: 18px;
+  color: #27382e;
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.store-review-card blockquote::before {
+  position: absolute;
+  top: -14px;
+  right: 0;
+  color: rgb(168 131 61 / 23%);
+  content: "“";
+  font: 600 38px/1 Georgia, serif;
+}
+
+.store-review-card blockquote[lang="ur"]::before {
+  content: "”";
+}
+
+.store-review-byline strong {
+  font-size: 12px;
+  letter-spacing: .015em;
+}
+
+.store-trust-stats {
+  background:
+    radial-gradient(ellipse at 8% 75%, rgb(199 163 84 / 8%), transparent 31%),
+    linear-gradient(180deg, #f8f5ec, #f2efe3);
+}
+
+.store-trust-card {
+  border-radius: 4px 24px 4px 24px;
+}
+
+.store-trust-card > svg {
+  box-sizing: content-box;
+  width: 23px;
+  height: 23px;
+  padding: 10px;
+  margin-bottom: 17px;
+  border: 1px solid rgb(168 131 61 / 32%);
+  border-radius: 50%;
+  background: rgb(251 245 229 / 82%);
+}
+
+.store-trust-card > strong {
+  font-size: clamp(32px, 3.6vw, 44px);
+}
+
+.store-certificate-concept {
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 48%, rgb(199 163 84 / 13%), transparent 46%),
+    radial-gradient(ellipse at 10% 10%, rgb(88 132 99 / 36%), transparent 30%),
+    radial-gradient(ellipse at 95% 90%, rgb(1 26 20 / 66%), transparent 38%),
+    linear-gradient(135deg, #062f26 0%, #0a4937 48%, #073629 100%);
+}
+
+.store-certificate-concept::before {
+  z-index: -1;
+  width: 620px;
+  height: 620px;
+  border-color: rgb(225 200 135 / 9%);
+  box-shadow: 0 0 0 24px rgb(225 200 135 / 3%), 0 0 0 52px rgb(225 200 135 / 2%);
+}
+
+.store-certificate-concept::after {
+  z-index: -1;
+  border-color: rgb(225 200 135 / 12%);
+  box-shadow: 0 0 0 23px rgb(225 200 135 / 3%);
+}
+
+.store-certificate-card {
+  max-width: 680px;
+  padding: 15px;
+  border: 5px double #b79345;
+  border-radius: 2px;
+  background:
+    radial-gradient(ellipse at 50% 10%, rgb(255 255 255 / 92%), transparent 52%),
+    radial-gradient(ellipse at 50% 100%, rgb(185 148 72 / 12%), transparent 46%),
+    repeating-linear-gradient(0deg, rgb(92 72 37 / 2.2%) 0, rgb(92 72 37 / 2.2%) 1px, transparent 1px, transparent 4px),
+    repeating-linear-gradient(90deg, transparent 0, rgb(144 116 66 / 1.3%) 1px, transparent 2px, transparent 7px),
+    #fffdf5;
+  box-shadow:
+    0 2px 1px rgb(255 255 255 / 85%) inset,
+    0 -8px 16px rgb(107 76 24 / 8%) inset,
+    1px 0 2px rgb(96 71 29 / 13%) inset,
+    -1px 0 2px rgb(96 71 29 / 13%) inset,
+    0 5px 9px rgb(0 0 0 / 17%),
+    0 32px 80px rgb(0 0 0 / 48%);
+  transform: perspective(1700px) rotateX(1deg) rotateZ(-.45deg);
+}
+
+.store-certificate-card::before {
+  inset: 19px;
+  border: 1px solid rgb(139 105 42 / 55%);
+}
+
+.store-certificate-card::after {
+  inset: 26px;
+  border: 1px solid rgb(7 80 57 / 24%);
+}
+
+.store-certificate-content {
+  min-height: 920px;
+  padding: 66px clamp(34px, 7vw, 70px) 56px;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgb(255 255 255 / 37%), transparent 66%),
+    repeating-linear-gradient(90deg, transparent 0, rgb(128 101 55 / 1.3%) 1px, transparent 2px, transparent 7px);
+}
+
+.store-certificate-top-rule {
+  display: flex;
+  width: min(100%, 390px);
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 26px;
+  color: #ae873b;
+}
+
+.store-certificate-top-rule::before,
+.store-certificate-top-rule::after {
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, transparent, rgb(168 131 61 / 72%));
+  content: "";
+}
+
+.store-certificate-top-rule::after {
+  transform: rotate(180deg);
+}
+
+.store-certificate-top-rule > span {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.store-certificate-label {
+  color: #7e6227;
+  font-size: 10px;
+  letter-spacing: .19em;
+}
+
+.store-certificate-emblem {
+  width: 92px;
+  height: 92px;
+  margin: 14px 0 19px;
+  border-color: #b18a40;
+  background: radial-gradient(circle at 35% 28%, #fffef9, #eadcaf 90%);
+  box-shadow: 0 3px 10px rgb(105 79 30 / 13%), inset 0 0 0 4px #fffdf5, inset 0 0 0 5px rgb(168 131 61 / 43%);
+}
+
+.store-certificate-emblem > svg {
+  width: 48px;
+  height: 48px;
+}
+
+.store-certificate-overline {
+  color: #8f702f;
+  font-size: 11px;
+  letter-spacing: .14em;
+}
+
+.store-certificate-content h2 {
+  margin: 12px 0 6px;
+  color: #124b37;
+  font-size: clamp(34px, 5vw, 48px);
+  text-shadow: 0 1px 0 #fff;
+}
+
+.store-certificate-ornament {
+  margin: 9px 0 12px;
+  color: #b18a40;
+  font-size: 12px;
+  letter-spacing: .13em;
+}
+
+.store-certificate-description {
+  max-width: 455px;
+  margin: 8px 0 22px;
+  color: #4b5145;
+  font-size: 12px;
+}
+
+.store-certificate-pledges {
+  width: min(100%, 440px);
+  gap: 9px;
+  margin-bottom: 37px;
+  padding: 14px 18px;
+  border-block: 1px solid rgb(168 131 61 / 34%);
+  background: rgb(255 255 255 / 28%);
+}
+
+.store-certificate-pledges li {
+  grid-template-columns: 18px 1fr auto;
+  padding-bottom: 8px;
+  border-bottom: 1px dotted rgb(168 131 61 / 38%);
+}
+
+.store-certificate-pledges li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.store-certificate-signoff {
+  width: min(100%, 450px);
+}
+
+.store-certificate-seal {
+  z-index: 0;
+  width: 78px;
+  height: 78px;
+  border: 3px solid #9a702a;
+  background:
+    radial-gradient(circle at 32% 22%, #fff5cb 0, #e9c66b 25%, #bc8d32 63%, #916722 100%);
+  box-shadow:
+    0 4px 7px rgb(61 43 14 / 28%),
+    inset 0 2px 4px rgb(255 255 255 / 80%),
+    inset 0 -5px 8px rgb(87 55 11 / 35%);
+}
+
+.store-certificate-seal::before {
+  z-index: 0;
+  inset: -9px;
+  filter: drop-shadow(0 3px 2px rgb(71 50 13 / 34%));
+}
+
+.store-certificate-seal::after {
+  position: absolute;
+  z-index: 1;
+  inset: 9px;
+  border: 1px solid rgb(117 78 20 / 60%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 33% 24%, #fff5cd 0, #ebc86f 42%, #bf9036 100%);
+  box-shadow:
+    0 2px 3px rgb(80 54 14 / 20%),
+    inset 0 1px 2px rgb(255 255 255 / 80%),
+    inset 0 -2px 4px rgb(93 58 12 / 28%);
+  content: "";
+}
+
+.store-certificate-seal > svg,
+.store-certificate-seal > span,
+.store-certificate-seal > small {
+  position: relative;
+  z-index: 2;
+}
+
+.store-certificate-seal > svg {
+  width: 20px;
+  height: 20px;
+  color: #674a18;
+}
+
+.store-certificate-seal > span {
+  color: #674a18;
+  font-size: 11px;
+}
+
+.store-certificate-seal > small {
+  margin-top: 2px;
+  color: #674a18;
+  font: 700 5px/1 var(--app-font-sans);
+  letter-spacing: .1em;
+}
+
+.store-certificate-signature-block {
+  width: min(100%, 245px);
+}
+
+.store-certificate-note {
+  margin: 31px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid rgb(168 131 61 / 37%);
+  color: #80652f;
+  font: italic 11px/1.6 var(--app-font-serif);
+}
+
+.store-certificate-note > span {
+  display: block;
+  font: 400 12px/1.9 'Noto Nastaliq Urdu', serif;
+}
+
+.store-certificate-footnote {
+  margin-top: 17px;
+  color: #f1e7ce;
+}
+
+.store-certificate-footnote > span {
+  color: #dfd0aa;
+}
+
+.store-values {
+  background: linear-gradient(105deg, #e7ebd8, #f1eddd 48%, #e3ead8);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 70%) inset, 0 -1px 0 rgb(7 80 57 / 8%) inset;
+}
+
+.store-value {
+  transition: background .2s ease, color .2s ease;
+}
+
+.store-value:hover {
+  background: rgb(255 253 247 / 44%);
+  color: #075039;
+}
+
+.store-value > svg {
+  box-sizing: content-box;
+  width: 19px;
+  height: 19px;
+  padding: 9px;
+  border: 1px solid rgb(168 131 61 / 32%);
+  border-radius: 50%;
+  background: rgb(255 253 247 / 72%);
+}
+
+.collection-section {
+  position: relative;
+  isolation: isolate;
+}
+
+.collection-section::before {
+  position: absolute;
+  z-index: -1;
+  inset: 60px -8vw 48px;
+  border: 1px solid rgb(168 131 61 / 13%);
+  background:
+    radial-gradient(ellipse at 90% 10%, rgb(199 163 84 / 8%), transparent 36%),
+    linear-gradient(145deg, rgb(248 246 237 / 0%), rgb(235 239 223 / 55%));
+  content: "";
+  pointer-events: none;
+}
+
+.collection-heading h2 {
+  text-wrap: balance;
+}
+
+.catalog-product {
+  border-color: rgb(168 131 61 / 30%);
+  border-radius: 5px 28px 5px 28px;
+  box-shadow: 0 8px 18px rgb(7 53 39 / 5%), 0 24px 60px rgb(7 53 39 / 9%);
+}
+
+.catalog-product:hover {
+  border-color: rgb(168 131 61 / 64%);
+  box-shadow: 0 12px 24px rgb(7 53 39 / 7%), 0 32px 75px rgb(7 53 39 / 15%);
+}
+
+.store-hero-art {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgb(199 163 84 / 15%), transparent 45%),
+    #103e30;
+}
+
+.hero-product-card {
+  border-radius: 5px 24px 5px 24px;
+  border-color: rgb(199 163 84 / 78%);
+  box-shadow: 0 6px 16px rgb(4 30 22 / 20%), 0 28px 80px rgb(4 30 22 / 38%);
+}
+
+@media (max-width: 700px) {
+  .collection-section::before {
+    inset: 35px -8px;
+  }
+
+  .store-value > svg {
+    padding: 7px;
+  }
+
+  .store-certificate-card {
+    padding: 9px;
+    transform: none;
+  }
+
+  .store-certificate-content {
+    min-height: 830px;
+    padding: 60px 27px 42px;
+  }
+
+  .store-certificate-top-rule {
+    margin-bottom: 20px;
+  }
+
+  .store-certificate-pledges {
+    padding-inline: 11px;
+  }
+}
+
+/* Landscape keeps the pledge readable as one keepsake-style paper certificate. */
+.store-certificate-card {
+  max-width: 1040px;
+  padding: 12px;
+  border-width: 5px;
+  background:
+    linear-gradient(118deg, rgb(255 255 255 / 72%), transparent 38%, rgb(157 119 45 / 7%) 100%),
+    repeating-linear-gradient(0deg, rgb(107 86 47 / 2%) 0, rgb(107 86 47 / 2%) 1px, transparent 1px, transparent 5px),
+    #f9f4e5;
+  box-shadow:
+    0 3px 0 rgb(255 255 255 / 88%) inset,
+    0 -7px 13px rgb(107 76 24 / 10%) inset,
+    0 5px 12px rgb(0 0 0 / 20%),
+    0 28px 65px rgb(0 0 0 / 42%);
+}
+
+.store-certificate-card::before {
+  inset: 17px;
+  border: 1px solid rgb(139 105 42 / 70%);
+}
+
+.store-certificate-card::after {
+  inset: 23px;
+  border-color: rgb(7 80 57 / 32%);
+}
+
+.store-certificate-content {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, .92fr);
+  grid-template-rows: auto 1fr auto auto;
+  align-items: center;
+  justify-items: stretch;
+  column-gap: clamp(30px, 6vw, 76px);
+  row-gap: 0;
+  padding: 47px clamp(42px, 7vw, 82px) 32px;
+  background:
+    radial-gradient(ellipse at 25% 18%, rgb(255 255 255 / 70%), transparent 48%),
+    repeating-linear-gradient(90deg, transparent 0, rgb(128 101 55 / 1%) 1px, transparent 2px, transparent 8px);
+}
+
+.store-certificate-top-rule {
+  grid-column: 1 / -1;
+  width: min(100%, 540px);
+  justify-self: center;
+  margin-bottom: 17px;
+}
+
+.store-certificate-header {
+  grid-column: 1 / -1;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.store-certificate-emblem {
+  width: 62px;
+  height: 62px;
+  margin: 0 0 13px;
+  outline-offset: 3px;
+}
+
+.store-certificate-emblem > svg {
+  width: 32px;
+  height: 32px;
+}
+
+.store-certificate-label {
+  margin: 0;
+  font-size: 9px;
+  letter-spacing: .2em;
+}
+
+.store-certificate-label > span {
+  font-size: 12px;
+}
+
+.store-certificate-overline {
+  margin: 12px 0 0;
+  font-size: 8px;
+  letter-spacing: .23em;
+}
+
+.store-certificate-content h2 {
+  margin: 7px 0 0;
+  font-size: clamp(33px, 4vw, 46px);
+  letter-spacing: -.025em;
+}
+
+.store-certificate-content h2 > span {
+  margin-top: 1px;
+  font-size: .55em;
+}
+
+.store-certificate-ornament {
+  margin: 4px 0 18px;
+}
+
+.store-certificate-body {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: 22px;
+  align-self: start;
+  padding-top: 14px;
+  text-align: left;
+}
+
+.store-certificate-intro {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0 0 8px;
+  color: #9b7938;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .2em;
+}
+
+.store-certificate-description {
+  grid-column: 1;
+  grid-row: 2;
+  max-width: none;
+  margin: 0;
+  font: 400 13px/1.75 var(--app-font-serif);
+}
+
+.store-certificate-description > span {
+  margin-top: 7px;
+  font-size: 13px;
+  line-height: 2.1;
+}
+
+.store-certificate-pledges {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 100%;
+  gap: 8px;
+  margin: 0;
+  padding: 13px 15px;
+  border-block: 1px solid rgb(168 131 61 / 39%);
+  background: rgb(255 255 255 / 38%);
+  font-size: 10px;
+}
+
+.store-certificate-pledges li {
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  gap: 6px;
+  padding-bottom: 6px;
+}
+
+.store-certificate-pledges [lang='ur'] {
+  font-size: 11px;
+}
+
+.store-certificate-signoff {
+  grid-column: 1 / -1;
+  grid-row: 4;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  align-self: end;
+  padding-inline: 7%;
+  padding-top: 13px;
+}
+
+.store-certificate-signature-block {
+  width: min(100%, 220px);
+}
+
+.store-certificate-signature {
+  font-size: 22px;
+}
+
+.store-certificate-issuer {
+  font-size: 8px;
+  letter-spacing: .12em;
+}
+
+.store-certificate-signoff > [lang='ur'] {
+  font-size: 11px;
+}
+
+.store-certificate-seal {
+  width: 69px;
+  height: 69px;
+}
+
+.store-certificate-seal::before {
+  inset: -8px;
+}
+
+.store-certificate-seal > svg {
+  width: 18px;
+  height: 18px;
+}
+
+.store-certificate-bottom-rule {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 23px;
+  padding-top: 11px;
+  border-top: 1px solid rgb(168 131 61 / 43%);
+  color: #8a6d32;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .18em;
+}
+
+.store-certificate-bottom-rule > [lang='ur'] {
+  font: 400 11px/1.8 'Noto Nastaliq Urdu', serif;
+  letter-spacing: 0;
+}
+
+.store-certificate-footnote {
+  margin-top: 15px;
+}
+
+@media (max-width: 700px) {
+  .store-certificate-content {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto auto;
+    padding: 43px 31px 25px;
+    row-gap: 0;
+  }
+
+  .store-certificate-top-rule,
+  .store-certificate-header,
+  .store-certificate-bottom-rule {
+    grid-column: 1;
+  }
+
+  .store-certificate-top-rule {
+    margin-bottom: 14px;
+  }
+
+  .store-certificate-emblem {
+    width: 56px;
+    height: 56px;
+  }
+
+  .store-certificate-overline {
+    font-size: 7px;
+    letter-spacing: .16em;
+  }
+
+  .store-certificate-content h2 {
+    font-size: clamp(30px, 8vw, 39px);
+  }
+
+  .store-certificate-ornament {
+    margin-bottom: 11px;
+  }
+
+  .store-certificate-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding-top: 6px;
+  }
+
+  .store-certificate-description {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 12px;
+  }
+
+  .store-certificate-pledges {
+    grid-column: 1;
+    grid-row: 3;
+    margin-top: 14px;
+    padding-inline: 10px;
+  }
+
+  .store-certificate-signoff {
+    grid-column: 1;
+    grid-row: auto;
+    padding-top: 22px;
+  }
+
+  .store-certificate-signature-block {
+    width: min(100%, 205px);
+  }
+
+  .store-certificate-seal {
+    width: 63px;
+    height: 63px;
+  }
+
+  .store-certificate-bottom-rule {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 380px) {
+  .store-certificate-card {
+    padding: 8px;
+  }
+
+  .store-certificate-content {
+    padding-inline: 24px;
+  }
+
+  .store-certificate-pledges li {
+    grid-template-columns: 15px minmax(0, 1fr);
+  }
+
+  .store-certificate-pledges [lang='ur'] {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+.store-certificate-concept {
+  background:
+    radial-gradient(ellipse at 50% 0, rgb(199 163 84 / 12%), transparent 42%),
+    linear-gradient(145deg, #f5f1e6, #eae9dc 56%, #f5f0e3);
+}
+
+.store-certificate-concept::before,
+.store-certificate-concept::after {
+  border-color: rgb(7 80 57 / 8%);
+  box-shadow: 0 0 0 22px rgb(7 80 57 / 2%);
+}
+
+.store-certificate-card {
+  max-width: 1060px;
+  padding: 11px;
+  border: 11px solid transparent;
+  background:
+    linear-gradient(135deg, #faf6e9, #f6f0df 56%, #fbf7eb) padding-box,
+    repeating-linear-gradient(45deg, #075039 0 4px, #d7b762 4px 6px, #f4e5b7 6px 8px, #0a4a36 8px 12px) border-box;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 82%),
+    0 4px 7px rgb(53 43 25 / 14%),
+    0 22px 55px rgb(31 42 32 / 22%);
+  transform: perspective(1800px) rotateX(.5deg) rotateZ(-.25deg);
+}
+
+.store-certificate-card::before {
+  inset: 8px;
+  border: 1px solid rgb(240 219 164 / 93%);
+}
+
+.store-certificate-card::after {
+  inset: 15px;
+  border: 1px solid rgb(7 80 57 / 34%);
+}
+
+.store-certificate-content {
+  grid-template-rows: auto auto auto auto;
+  padding: 34px clamp(36px, 7vw, 76px) 22px;
+  border: 1px solid rgb(153 120 57 / 48%);
+  background:
+    radial-gradient(ellipse at 50% 20%, rgb(255 255 255 / 90%), transparent 63%),
+    radial-gradient(circle at 14px 14px, rgb(169 132 59 / 32%) 1px, transparent 1.7px),
+    radial-gradient(circle at calc(100% - 14px) 14px, rgb(169 132 59 / 32%) 1px, transparent 1.7px),
+    radial-gradient(circle at 14px calc(100% - 14px), rgb(169 132 59 / 32%) 1px, transparent 1.7px),
+    radial-gradient(circle at calc(100% - 14px) calc(100% - 14px), rgb(169 132 59 / 32%) 1px, transparent 1.7px),
+    radial-gradient(ellipse at 0 100%, rgb(183 146 74 / 9%), transparent 40%),
+    repeating-linear-gradient(0deg, rgb(86 68 39 / 2%) 0, rgb(86 68 39 / 2%) 1px, transparent 1px, transparent 5px),
+    repeating-linear-gradient(90deg, transparent 0, rgb(124 99 55 / 1.2%) 1px, transparent 2px, transparent 8px),
+    #faf6e9;
+}
+
+.store-certificate-top-rule {
+  width: min(100%, 560px);
+  margin-bottom: 14px;
+}
+
+.store-certificate-top-rule::before,
+.store-certificate-top-rule::after {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #b18a40 34%, #b18a40 66%, transparent);
+}
+
+.store-certificate-top-rule > span {
+  color: #a57a2d;
+  font-size: 21px;
+  text-shadow: 0 1px 0 white;
+}
+
+.store-certificate-emblem {
+  width: 69px;
+  height: 69px;
+  margin-bottom: 10px;
+  border: 1px solid #98702e;
+  outline: 1px solid rgb(174 134 57 / 58%);
+  outline-offset: 4px;
+  color: #f8f1dd;
+  background: linear-gradient(145deg, #176348, #075039 68%, #063c2d);
+  box-shadow:
+    0 4px 12px rgb(46 42 30 / 19%),
+    inset 0 0 0 3px rgb(255 255 255 / 8%);
+}
+
+.store-certificate-emblem > svg {
+  width: 44px;
+  height: 44px;
+}
+
+.store-certificate-label {
+  color: #74571f;
+  font-size: 10px;
+  letter-spacing: .23em;
+}
+
+.store-certificate-label > span {
+  color: #466a53;
+  font-size: 13px;
+}
+
+.store-certificate-overline {
+  margin-top: 9px;
+  color: #a27a34;
+  font-size: 8px;
+  letter-spacing: .25em;
+}
+
+.store-certificate-content h2 {
+  margin: 6px 0 0;
+  color: #104a35;
+  font-size: clamp(37px, 4.4vw, 51px);
+  text-shadow: 0 1px 0 white, 0 2px 0 rgb(161 128 63 / 13%);
+}
+
+.store-certificate-content h2 > span {
+  color: #4a6952;
+  font-size: .54em;
+}
+
+.store-certificate-ornament {
+  margin: 2px 0 9px;
+  color: #a77d34;
+  font-size: 15px;
+  letter-spacing: .2em;
+}
+
+.store-certificate-body {
+  gap: clamp(18px, 4vw, 48px);
+  padding: 12px 0 9px;
+  border-top: 1px solid rgb(168 131 61 / 45%);
+  border-bottom: 1px solid rgb(168 131 61 / 45%);
+}
+
+.store-certificate-intro {
+  color: #95702c;
+  font-size: 8px;
+  letter-spacing: .24em;
+}
+
+.store-certificate-description {
+  color: #35443a;
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+.store-certificate-description > span {
+  color: #536a56;
+  font-size: 14px;
+}
+
+.store-certificate-pledges {
+  gap: 10px;
+  padding: 16px 17px;
+  border: 1px solid rgb(168 131 61 / 37%);
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 70%), rgb(244 237 217 / 40%));
+  box-shadow: 0 3px 10px rgb(54 49 35 / 5%);
+  font-size: 12px;
+}
+
+.store-certificate-pledges li {
+  border-bottom: 1px dotted rgb(139 108 48 / 36%);
+}
+
+.store-certificate-pledges li:last-child {
+  border-bottom: 0;
+}
+
+.store-certificate-pledges svg {
+  color: #94702f;
+}
+
+.store-certificate-signoff {
+  padding-top: 12px;
+}
+
+.store-certificate-signature {
+  color: #1f5c40;
+  font-size: 25px;
+}
+
+.store-certificate-signature-line {
+  border-color: #987331;
+}
+
+.store-certificate-issuer {
+  color: #5d604c;
+  font-size: 8px;
+}
+
+.store-certificate-seal {
+  width: 91px;
+  height: 91px;
+  border-color: #866222;
+  background:
+    radial-gradient(circle at 28% 18%, #fff9db 0, #f0d789 20%, #c49a3e 57%, #8f6928 100%);
+  box-shadow:
+    0 5px 8px rgb(62 48 19 / 30%),
+    inset 0 2px 4px rgb(255 255 255 / 82%),
+    inset 0 -5px 8px rgb(87 55 11 / 37%);
+  transform: rotate(7deg);
+}
+
+.store-certificate-seal::before {
+  inset: -10px;
+  background: repeating-conic-gradient(from 0deg, #e6c779 0deg 4deg, #a78032 4deg 8deg);
+}
+
+.store-certificate-seal > svg {
+  width: 23px;
+  height: 23px;
+}
+
+.store-certificate-seal > span {
+  font-size: 13px;
+}
+
+.store-certificate-seal > small {
+  font-size: 6px;
+}
+
+.store-certificate-seal::after {
+  border-color: rgb(117 78 20 / 67%);
+  background:
+    radial-gradient(circle at 28% 18%, #fff8d5 0, #e9c66f 45%, #b88a35 100%);
+}
+
+.store-certificate-bottom-rule {
+  margin-top: 13px;
+  border-color: rgb(168 131 61 / 40%);
+  color: #806127;
+  font-size: 7px;
+}
+
+.store-certificate-footnote {
+  color: #52624e;
+}
+
+.store-certificate-footnote > span {
+  color: #52624e;
+}
+
+@media (max-width: 700px) {
+  .store-certificate-card {
+    padding: 8px;
+    border-width: 7px;
+    transform: none;
+  }
+
+  .store-certificate-card::before {
+    inset: 7px;
+  }
+
+  .store-certificate-card::after {
+    inset: 13px;
+  }
+
+  .store-certificate-content {
+    padding: 37px 27px 23px;
+  }
+
+  .store-certificate-header {
+    padding-inline: 3px;
+  }
+
+  .store-certificate-content h2 {
+    font-size: clamp(31px, 8vw, 41px);
+  }
+
+  .store-certificate-body {
+    gap: 0;
+    padding-block: 14px;
+  }
+
+  .store-certificate-pledges {
+    padding: 13px 10px;
+    font-size: 11px;
+  }
+
+  .store-certificate-pledges {
+    border-inline: 0;
+  }
+
+  .store-certificate-signoff {
+    padding-top: 18px;
+  }
+
+  .store-certificate-seal {
+    width: 72px;
+    height: 72px;
+  }
+
+  .store-certificate-seal::before {
+    inset: -8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .store-certificate-card {
+    transform: none;
+  }
+}
+
+.store-certificate-card {
+  padding: 13px;
+  border: 12px solid transparent;
+  background:
+    linear-gradient(135deg, #faf5e5, #f5edd7 52%, #fbf7e9) padding-box,
+    repeating-linear-gradient(45deg, #075039 0 4px, #c8a351 4px 6px, #f2dfa9 6px 8px, #0b4934 8px 12px) border-box;
+  box-shadow:
+    0 0 0 2px #e7d19c,
+    0 3px 8px rgb(53 43 25 / 12%),
+    0 25px 58px rgb(31 42 32 / 22%);
+}
+
+.store-certificate-card::before {
+  inset: 7px;
+  border: 1px solid #b18a40;
+}
+
+.store-certificate-card::after {
+  inset: 14px;
+  border: 1px solid rgb(7 80 57 / 42%);
+}
+
+.store-certificate-content {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto;
+  justify-items: center;
+  padding: 31px clamp(34px, 8vw, 94px) 24px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 25%, rgb(255 255 255 / 92%), transparent 65%),
+    radial-gradient(circle at 14px 14px, rgb(169 132 59 / 38%) 1px, transparent 1.8px),
+    radial-gradient(circle at calc(100% - 14px) 14px, rgb(169 132 59 / 38%) 1px, transparent 1.8px),
+    radial-gradient(circle at 14px calc(100% - 14px), rgb(169 132 59 / 38%) 1px, transparent 1.8px),
+    radial-gradient(circle at calc(100% - 14px) calc(100% - 14px), rgb(169 132 59 / 38%) 1px, transparent 1.8px),
+    repeating-linear-gradient(0deg, rgb(86 68 39 / 1.8%) 0, rgb(86 68 39 / 1.8%) 1px, transparent 1px, transparent 5px),
+    #faf6e9;
+}
+
+.store-certificate-top-rule,
+.store-certificate-header,
+.store-certificate-body,
+.store-certificate-signoff,
+.store-certificate-bottom-rule {
+  grid-column: 1;
+}
+
+.store-certificate-top-rule {
+  grid-row: 1;
+  margin-bottom: 12px;
+}
+
+.store-certificate-header {
+  grid-row: 2;
+  width: 100%;
+}
+
+.store-certificate-emblem {
+  width: 74px;
+  height: 74px;
+  margin: 0 0 12px;
+}
+
+.store-certificate-emblem > svg {
+  width: 47px;
+  height: 47px;
+}
+
+.store-certificate-label {
+  font-size: 10px;
+  letter-spacing: .23em;
+}
+
+.store-certificate-overline {
+  margin-top: 11px;
+  font-size: 9px;
+  letter-spacing: .25em;
+}
+
+.store-certificate-content h2 {
+  margin-top: 8px;
+  font-size: clamp(38px, 5vw, 58px);
+  letter-spacing: -.035em;
+}
+
+.store-certificate-content h2 > span {
+  margin-top: 4px;
+  font-size: .5em;
+}
+
+.store-certificate-ornament {
+  margin: 5px 0 12px;
+  font-size: 16px;
+}
+
+.store-certificate-body {
+  grid-row: 3;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 13px 12px 10px;
+  border-top: 1px solid rgb(168 131 61 / 50%);
+  border-bottom: 1px solid rgb(168 131 61 / 50%);
+  text-align: center;
+}
+
+.store-certificate-intro {
+  margin: 0;
+  font-size: 9px;
+  letter-spacing: .24em;
+}
+
+.store-certificate-recipient {
+  margin: 7px 0 0;
+  color: #13523a;
+  font: 600 clamp(27px, 3vw, 37px)/1.12 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: .015em;
+}
+
+.store-certificate-recipient-ur {
+  margin: 4px 0 0;
+  color: #45674e;
+  font: 400 18px/2 'Noto Nastaliq Urdu', serif;
+}
+
+.store-certificate-description {
+  max-width: 680px;
+  margin: 9px 0 3px;
+  font: 400 15px/1.75 var(--app-font-serif);
+  text-align: center;
+}
+
+.store-certificate-description > span {
+  margin-top: 5px;
+  font-size: 15px;
+  line-height: 2;
+}
+
+.store-certificate-signoff {
+  grid-row: 4;
+  width: 100%;
+  align-items: end;
+  padding: 16px 5% 0;
+}
+
+.store-certificate-signature-block {
+  align-items: flex-start;
+  text-align: center;
+}
+
+.store-certificate-signature-line {
+  border-top-style: solid;
+}
+
+.store-certificate-bottom-rule {
+  grid-row: 5;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.store-reviews {
+  background:
+    radial-gradient(ellipse at 0 50%, rgb(199 163 84 / 8%), transparent 32%),
+    linear-gradient(180deg, #f8f5ec, #f2efe3);
+}
+
+.store-review-card {
+  border: 1px solid rgb(168 131 61 / 25%);
+  border-radius: 5px 22px 5px 22px;
+  background:
+    linear-gradient(150deg, rgb(255 255 255 / 82%), transparent 54%),
+    radial-gradient(circle at 100% 0, rgb(199 163 84 / 12%), transparent 34%),
+    #fffdf7;
+  box-shadow: 0 7px 18px rgb(32 55 37 / 6%), 0 18px 38px rgb(32 55 37 / 5%);
+}
+
+.store-review-card:hover {
+  border-color: rgb(168 131 61 / 55%);
+  box-shadow: 0 12px 26px rgb(32 55 37 / 9%), 0 25px 48px rgb(32 55 37 / 8%);
+}
+
+.store-review-stars {
+  gap: 4px;
+}
+
+.store-review-star {
+  width: 23px;
+  height: 23px;
+  filter: drop-shadow(0 1px 1px rgb(117 85 27 / 20%));
+}
+
+.store-review-rating-value {
+  padding: 5px 9px;
+  border: 1px solid rgb(168 131 61 / 30%);
+  border-radius: 99px;
+  color: #134833;
+  background: #f8f1df;
+}
+
+.store-review-card blockquote {
+  min-height: 94px;
+  color: #2c3d32;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.store-review-byline {
+  padding-top: 12px;
+  border-top: 1px solid rgb(168 131 61 / 22%);
+}
+
+.store-review-byline strong {
+  color: #174d37;
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  .store-certificate-card {
+    padding: 8px;
+    border-width: 7px;
+  }
+
+  .store-certificate-content {
+    padding: 36px 23px 21px;
+  }
+
+  .store-certificate-content h2 {
+    font-size: clamp(31px, 8vw, 43px);
+  }
+
+  .store-certificate-description,
+  .store-certificate-description > span {
+    font-size: 13px;
+  }
+
+  .store-certificate-signoff {
+    padding-inline: 0;
+  }
+
+  .store-review-card blockquote {
+    min-height: 0;
+  }
+}
+
+.store-certificate-concept {
+  padding-block: clamp(52px, 8vw, 92px);
+  background:
+    radial-gradient(ellipse at 50% 45%, rgb(118 105 74 / 10%), transparent 45%),
+    repeating-linear-gradient(175deg, rgb(102 89 61 / 2%) 0 1px, transparent 1px 6px),
+    linear-gradient(135deg, #e9e5d8, #f0ecdf 48%, #e3e0d4);
+}
+
+.store-certificate-card {
+  max-width: 1020px;
+  padding: 19px;
+  border: 0;
+  background:
+    linear-gradient(135deg, #eee0b6, #99742d 22%, #ead69a 49%, #96702d 73%, #e1c778);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 85%) inset,
+    0 4px 5px rgb(71 59 36 / 15%),
+    0 20px 35px rgb(45 43 34 / 17%),
+    0 42px 70px rgb(45 43 34 / 13%);
+  transform: perspective(1800px) rotateZ(-.18deg);
+}
+
+.store-certificate-card::before {
+  inset: 8px;
+  border: 1px solid rgb(255 249 223 / 78%);
+}
+
+.store-certificate-card::after {
+  inset: 14px;
+  border: 1px solid rgb(105 76 26 / 42%);
+}
+
+.store-certificate-content {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  align-items: stretch;
+  padding: clamp(28px, 4vw, 42px) clamp(32px, 7vw, 76px) 28px;
+  border: 0;
+  outline: 1px solid rgb(158 127 61 / 48%);
+  outline-offset: -7px;
+  background:
+    radial-gradient(ellipse at 20% 16%, rgb(255 255 255 / 84%), transparent 48%),
+    radial-gradient(ellipse at 90% 84%, rgb(179 146 77 / 9%), transparent 45%),
+    repeating-linear-gradient(0deg, rgb(102 82 43 / 2.1%) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(93deg, transparent 0 18px, rgb(122 99 52 / 1.2%) 19px, transparent 20px 37px),
+    #f8f2df;
+  box-shadow:
+    0 1px 0 white inset,
+    0 -8px 18px rgb(103 78 34 / 5%) inset;
+  text-align: center;
+}
+
+.certificate-letterhead {
+  display: grid;
+  grid-template-columns: 54px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid rgb(137 104 43 / 43%);
+  text-align: left;
+}
+
+.certificate-brand-mark {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 1px solid #ac873c;
+  border-radius: 50%;
+  color: #f7edcf;
+  background: #0b5139;
+  box-shadow: 0 2px 4px rgb(64 51 23 / 17%), inset 0 0 0 3px rgb(255 255 255 / 7%);
+}
+
+.certificate-brand-mark svg {
+  width: 39px;
+  height: 39px;
+}
+
+.certificate-brand-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.certificate-brand-name strong {
+  color: #254532;
+  font: 600 17px/1.15 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: .025em;
+}
+
+.certificate-brand-name > span {
+  color: #61735b;
+  font: 400 12px/1.8 'Noto Nastaliq Urdu', serif;
+}
+
+.certificate-letterhead-note {
+  align-self: center;
+  padding: 6px 9px;
+  border: 1px solid rgb(155 119 48 / 35%);
+  color: #87672d;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .18em;
+}
+
+.store-certificate-header {
+  width: 100%;
+  margin: 20px auto 0;
+  justify-items: center;
+}
+
+.store-certificate-overline {
+  margin: 0;
+  color: #8f7137;
+  font-size: 8px;
+  letter-spacing: .25em;
+}
+
+.store-certificate-content h2 {
+  margin: 6px 0 0;
+  color: #174c36;
+  font: 500 clamp(36px, 5vw, 56px)/1.07 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: .005em;
+  text-shadow: 0 1px 0 rgb(255 255 255 / 85%);
+}
+
+.store-certificate-content h2 > span {
+  margin-top: 3px;
+  color: #49684e;
+  font: 400 .48em/2 'Noto Nastaliq Urdu', serif;
+}
+
+.store-certificate-ornament {
+  margin: 3px 0 0;
+  color: #a17a35;
+  font-size: 13px;
+  letter-spacing: .2em;
+}
+
+.store-certificate-body {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin-top: 14px;
+  padding: 13px 10px 12px;
+  border-top: 1px solid rgb(152 119 52 / 34%);
+  border-bottom: 1px solid rgb(152 119 52 / 34%);
+  text-align: center;
+}
+
+.store-certificate-intro {
+  margin: 0;
+  color: #90703a;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .23em;
+}
+
+.store-certificate-recipient {
+  margin: 4px 0 0;
+  color: #174a35;
+  font: 600 clamp(27px, 3.8vw, 38px)/1.08 'Cormorant Garamond', Georgia, serif;
+}
+
+.store-certificate-recipient-ur {
+  margin: 2px 0 0;
+  color: #536950;
+  font: 400 16px/2 'Noto Nastaliq Urdu', serif;
+}
+
+.store-certificate-description {
+  max-width: 700px;
+  margin: 6px 0 0;
+  color: #3f4d40;
+  font: 400 13px/1.75 var(--app-font-sans);
+}
+
+.store-certificate-description > span {
+  margin-top: 3px;
+  color: #53634f;
+  font: 400 13px/2 'Noto Nastaliq Urdu', serif;
+}
+
+.store-certificate-signoff {
+  display: flex;
+  width: 100%;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 14px;
+  padding: 0 5%;
+}
+
+.store-certificate-signature-block {
+  display: flex;
+  width: 230px;
+  flex-direction: column;
+  align-items: center;
+  color: #365540;
+}
+
+.store-certificate-signature {
+  color: #315b40;
+  font: 600 32px/1 'Caveat', cursive;
+  transform: rotate(-2deg);
+}
+
+.store-certificate-signature-line {
+  width: 100%;
+  margin-top: 1px;
+  border-top: 1px solid rgb(92 105 73 / 65%);
+}
+
+.store-certificate-issuer {
+  margin-top: 4px;
+  color: #5c614b;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .16em;
+}
+
+.store-certificate-signoff > [lang='ur'] {
+  color: #5a6d53;
+  font: 400 11px/1.9 'Noto Nastaliq Urdu', serif;
+}
+
+.store-certificate-seal {
+  width: 74px;
+  height: 74px;
+  border: 2px solid #946d27;
+  background:
+    radial-gradient(circle at 28% 19%, #fff6d7 0, #e5c575 23%, #bb913c 62%, #8e6828 100%);
+  box-shadow:
+    0 4px 7px rgb(73 54 20 / 30%),
+    inset 0 2px 3px rgb(255 255 255 / 78%),
+    inset 0 -4px 8px rgb(89 59 16 / 35%);
+  transform: rotate(8deg);
+}
+
+.store-certificate-seal::before {
+  inset: -8px;
+  background: repeating-conic-gradient(from 3deg, #e5c777 0deg 4deg, #a27b30 4deg 8deg);
+  clip-path: polygon(50% 0%,57% 8%,65% 2%,69% 12%,79% 9%,80% 20%,91% 22%,88% 33%,99% 40%,91% 49%,98% 59%,87% 65%,89% 77%,77% 79%,71% 90%,61% 86%,52% 100%,43% 89%,32% 95%,28% 83%,16% 84%,18% 72%,6% 67%,12% 56%,1% 49%,9% 40%,3% 29%,15% 25%,15% 14%,27% 16%,34% 5%,43% 11%);
+}
+
+.store-certificate-seal > svg,
+.store-certificate-seal > span,
+.store-certificate-seal > small {
+  position: relative;
+  z-index: 2;
+  color: #684a17;
+}
+
+.store-certificate-seal > svg {
+  width: 18px;
+  height: 18px;
+}
+
+.store-certificate-seal > span {
+  margin-top: 1px;
+  font: 700 11px/1 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: .12em;
+}
+
+.store-certificate-seal > small {
+  margin-top: 2px;
+  font: 700 4px/1 var(--app-font-sans);
+  letter-spacing: .08em;
+}
+
+.store-certificate-note {
+  margin: 12px 0 0;
+  color: #897041;
+  font: italic 9px/1.5 var(--app-font-serif);
+  letter-spacing: .025em;
+  text-align: center;
+}
+
+.store-certificate-note > span {
+  display: block;
+  color: #687660;
+  font: 400 10px/1.8 'Noto Nastaliq Urdu', serif;
+}
+
+.store-review-title {
+  margin: 14px 0 0;
+  color: #174d37;
+  font: 600 18px/1.2 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: .005em;
+}
+
+.store-review-card blockquote {
+  min-height: 110px;
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.store-review-card blockquote[lang='ur'] {
+  font-size: 15px;
+  line-height: 2.05;
+}
+
+.store-review-byline {
+  align-items: center;
+}
+
+@media (max-width: 700px) {
+  .store-certificate-card {
+    padding: 11px;
+    transform: none;
+  }
+
+  .store-certificate-content {
+    padding: 28px 23px 21px;
+  }
+
+  .certificate-letterhead {
+    grid-template-columns: 42px 1fr;
+    gap: 8px;
+    padding-bottom: 9px;
+  }
+
+  .certificate-brand-mark {
+    width: 39px;
+    height: 39px;
+  }
+
+  .certificate-brand-mark svg {
+    width: 33px;
+    height: 33px;
+  }
+
+  .certificate-brand-name strong {
+    font-size: 14px;
+  }
+
+  .certificate-brand-name > span {
+    font-size: 10px;
+  }
+
+  .certificate-letterhead-note {
+    display: none;
+  }
+
+  .store-certificate-header {
+    margin-top: 16px;
+  }
+
+  .store-certificate-content h2 {
+    font-size: clamp(30px, 8vw, 43px);
+  }
+
+  .store-certificate-body {
+    padding-inline: 0;
+  }
+
+  .store-certificate-description,
+  .store-certificate-description > span {
+    font-size: 12px;
+  }
+
+  .store-certificate-signoff {
+    margin-top: 13px;
+    padding-inline: 0;
+  }
+
+  .store-certificate-signature-block {
+    width: min(62%, 215px);
+  }
+
+  .store-certificate-signature {
+    font-size: 28px;
+  }
+
+  .store-certificate-seal {
+    width: 62px;
+    height: 62px;
+  }
+
+  .store-certificate-seal::before {
+    inset: -7px;
+  }
+
+  .store-review-title {
+    font-size: 17px;
+  }
+
+  .store-review-card blockquote {
+    min-height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .store-certificate-card,
+  .store-review-card {
+    transform: none;
+    transition: none;
+  }
+}

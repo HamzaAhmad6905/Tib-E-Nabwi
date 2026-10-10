@@ -27,6 +27,18 @@ shopify-theme/
 8. For live statistics, add a statistic block, enter the value and a customer-facing label, name its source or calculation method, then enable **This live value has a documented, verifiable source**. A live block is hidden unless all four fields are present. Base order totals on Shopify order records, document how returning customers are counted, use only genuine review data for average ratings, and use documented survey results for satisfaction. These editable fields do not fetch or calculate Shopify reports automatically.
 9. Preview the duplicate theme at desktop and mobile widths before publishing it.
 
+## React preview mode
+
+The React storefront displays its sample reviews, illustrative statistics, and brand-commitment certificate during Vite development only. The shared switch is in `src/App.tsx`:
+
+```ts
+const showDevelopmentPreview = import.meta.env.DEV;
+```
+
+Run the development server normally to see the preview. A production build always turns preview mode off. Production reviews and metrics must be supplied separately from genuine review submissions and documented business records; with no such data, the components render their empty states.
+
+The React development preview also includes a formal, in-house **Certificate of Brand Commitment**. It communicates the shop's own commitment to clear product information, not product testing, certification, or an independent endorsement.
+
 ## Review-app integration
 
 These sections use Shopify theme-editor blocks; they are not connected to a review provider. When you adopt a legitimate review app, use its Shopify theme app block or documented theme integration for synchronized, authentic reviews. Do not copy app-managed reviews into both systems or display unverified purchase badges. The section intentionally does not create a verified-purchase indicator.
