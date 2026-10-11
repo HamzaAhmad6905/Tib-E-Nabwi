@@ -22,7 +22,10 @@ import { startCheckout } from './shopify';
 
 type Product = { slug: string; name: string; ur: string; price: number; grams: number; photo: string };
 type CartLine = { slug: string; quantity: number };
-const showDevelopmentPreview = import.meta.env.DEV;
+const showDevelopmentPreview =
+  import.meta.env.DEV ||
+  import.meta.env.VITE_STORE_DEMO_PREVIEW === 'true' ||
+  new URLSearchParams(window.location.search).get('store-preview') === '1';
 const product: Product = { slug: 'al-mizan', name: 'Al-Mizan Herbal Slim Detox Powder', ur: 'المیزان ہربل پاؤڈر', price: 2500, grams: 200, photo: 'al-mizan-original.jpeg' };
 const ingredients = [
   ['Senna leaf', 'سنا کے پتے'], ['Ajwain', 'اجوائن'], ['Kalonji (black seed)', 'کلونجی (کالا دانہ)'], ['Green tea', 'سبز چائے'],
